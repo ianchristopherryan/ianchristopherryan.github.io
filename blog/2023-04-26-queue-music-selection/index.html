@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta content="ie=edge" http-equiv="x-ua-compatible">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+
+    <title>Amazon Connect: Customer control of queue music - Ian Ryan</title>
+
+
+  <meta name="description" content="Allowing users to select their own queue music improves customer experience."/>
+
+
+
+
+
+
+
+
+
+
+
+
+    <link rel="icon" href="/assets/images/favicon/favicon.png">
+    <link href="/assets/css/main.css" rel="stylesheet">
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Mono&family=Merriweather:wght@300;400;700&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    
+      <script>
+          localStorage.getItem('darkMode') === 'true' && document.documentElement.setAttribute('data-mode', 'dark');
+      </script>
+    
+
+  </head>
+<body class="page page-post page-post-1 has-static-header">
+
+
+<div class="menu-main-mobile " id="menu-main-mobile">
+  
+  <div class="menu-main-mobile-top">
+    <div id="close-overlay" class="menu-main-close">
+      <div class="hamburger"></div>
+    </div>
+  </div>
+
+  <div class="menu-main-mobile-center">
+    
+      <ul class="menu">
+        
+          <li class="menu-item-home">
+            <a href="/">Home</a>
+          </li>
+        
+          <li class="menu-item-blog">
+            <a href="/blog/">Blog</a>
+          </li>
+        
+      </ul>
+    
+  </div>
+
+  <div class="menu-main-mobile-bottom">
+    
+      
+
+<div class="social" id="social">
+  
+  <a href="https://github.com/ianchristopherryan/" target="blank" title="Github">
+    <i class="fab fa-github"></i>
+  </a>
+  
+  <a href="https://www.linkedin.com/in/ian-christopher-ryan/" target="blank" title="Linkedin">
+    <i class="fab fa-linkedin"></i>
+  </a>
+  
+</div>
+
+
+    
+    
+  </div>
+
+</div>
+
+
+
+
+<div id="header" class='header '>
+  <div class="container">
+    <div class="logos">
+  <div class="logo logo-desktop">
+    
+  
+    
+      <div class="logo-text"><a href="/">Ian Christopher Ryan</a></div>
+    
+    
+  </div>
+
+  <div class="logo logo-desktop-invert">
+    
+    
+  
+    
+      <div class="logo-text"><a href="/">Ian Christopher Ryan</a></div>
+    
+    
+  </div>
+
+  <div class="logo logo-mobile">
+    
+    
+  
+    
+      <div class="logo-text"><a href="/">Ian Christopher Ryan</a></div>
+    
+    
+  </div>
+
+
+  <div class="logo logo-mobile-invert">
+    
+    
+  
+    
+      <div class="logo-text"><a href="/">Ian Christopher Ryan</a></div>
+    
+
+  </div>
+
+</div>
+
+
+    <div class="menu-main">
+  <ul>
+    
+      
+        
+        <li class="">
+          <a href="/">Home</a>
+        </li>
+      
+    
+      
+        
+        <li class="">
+          <a href="/blog/">Blog</a>
+        </li>
+      
+    
+  </ul>
+</div>
+
+    
+    <div class="hamburger-trigger" id="toggle-menu-main-mobile">
+  <button class="hamburger">Menu</button>
+</div>
+  </div>
+</div>
+
+<div id="wrapper" class="wrapper">     
+  <div class="section">
+  <div class="container post-header">
+
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-8">
+          
+            <div class="post-date">26 March 2023</div>
+          
+          
+          <div class="post-categories">
+          
+
+
+  
+    
+
+
+
+
+<div class="category-link">
+<a href="/category/aws">
+  AWS
+</a>
+
+</div>
+  
+    
+
+
+
+
+<div class="category-link">
+<a href="/category/amazon-connect">
+  Amazon Connect
+</a>
+
+</div>
+  
+    
+
+
+
+
+<div class="category-link">
+<a href="/category/cx">
+  CX
+</a>
+
+</div>
+  
+
+          
+          </div>
+          <div class="post-title">
+            <h1>Amazon Connect: Customer control of queue music</h1>
+          </div>
+          
+            <div class="post-description">
+              <p>Allowing users to select their own queue music improves customer experience.</p>
+            </div>
+          
+
+          
+            <div class="post-authors">
+              
+              
+              
+              
+
+
+
+
+<div class="author">
+  
+    <div class="author-image">
+      <img src="/assets/images/team/ianryan.jpeg" alt="Ian Ryan"/>
+    </div>
+  
+
+  
+    <div class="author-content">
+      <div class="author-name">Ian Ryan</div>
+      
+        <div class="author-job">AWS Architect</div>
+      
+    </div>
+  
+</div>
+              
+            </div>
+          
+
+      </div>
+    </div>
+          
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-8">
+        
+          <div class="post-image">
+            <img src="/assets/images/gen/blog/blog-1.webp" alt="Amazon Connect: Customer control of queue music" />
+          </div>
+        
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section pt-0">
+  <div class="container">
+    <div class="row justify-content-center">
+
+      <div class="col-12 col-lg-8">
+        <div class="content"><blockquote>
+  <p>This is the first in a series of posts where I will be looking into aspects of Amazon Connect, from the customer experience, to the agents experience. Eventually also discussing the day to day operations and dev-ops involved in managing an enterprise level contact centre solution.</p>
+</blockquote>
+
+<h1 id="overview">Overview</h1>
+
+<p>In today’s world, customer experience plays a vital role in the success of any business. When it comes to call centers, one of the essential elements of customer experience is the music that customers listen to while waiting in a queue. Amazon Connect, a cloud-based contact center solution, provides an excellent opportunity for businesses to customize their queue music to enhance customer experience.</p>
+
+<p>Traditionally, call centers play generic repetitive music for customers waiting in a queue. There is little consideration for the preferences of customers regarding the music that they may be hearing for potentially a significant amount of time. Some customers may prefer to change the music, or some customers may even wish to just wait in silence. In this blog post, we will discuss the benefits and a simple design for allowing users to have interactive control of the music that they are hearing in a way familiar to them by allowing them to skip music tracks, or even stop the music.</p>
+
+<h2 id="benefits">Benefits</h2>
+
+<p>There are many benefits of allowing customers to have more control of the music that they are hearing when they are waiting in a queue, to name just a few:</p>
+
+<ul>
+  <li>
+    <p><strong>Increased Satisfaction</strong>: Allowing customers to control the queue music can increase their overall satisfaction with the call center experience. Customers are more likely to feel heard and respected if they are given some control over how they are spending their time waiting.</p>
+  </li>
+  <li>
+    <p><strong>Reduced Frustration</strong>: Listening to the same music on repeat can be frustrating, especially if customers are on hold for a long time. Giving them the option to skip songs or play silence can reduce this frustration and make the wait time more tolerable.</p>
+  </li>
+  <li>
+    <p><strong>Improved Perception of Time</strong>: When customers have control over their wait time, they are more likely to be engaged and less likely to feel that time is dragging. This can lead to a better perception of the overall wait time, even if the wait time is long.</p>
+  </li>
+  <li>
+    <p><strong>Enhanced Brand Perception</strong>: Allowing customers to control the queue music can create a more positive perception of the brand. Customers will appreciate the effort made to provide a more personalized experience and may be more likely to recommend the brand to others.</p>
+  </li>
+  <li>
+    <p><strong>Better Insights</strong>: If customers are given the option to skip songs or play silence, the call center can gather valuable insights into customer preferences. By analyzing which songs are skipped the most or which customers choose silence, call centers can make informed decisions about which music to play in the future.</p>
+  </li>
+</ul>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>The overall concepts in this blog post do not require any prior knowledge of Amazon Connect, but the actual example implementation assumes a knowledge of Amazon Connect with the ability to create flows and set up a basic call center. An understanding of AWS services is also assumed.</p>
+
+<h2 id="example-design">Example design</h2>
+
+<p>To enable customers to choose their own queue music in Amazon Connect, a Queue Flow needs to be created that can accept input from the customer while they are waiting. This custom Queue Flow bypasses the <em>loop prompts</em> block as it needs to gather input from the customer. This is a common pattern when needing to execute more advanced treatments in the queue. A lambda function is used that selects which  music is to be played, in our example this music list is just a parameter, but it would usually be part of your data driven contact center design. The selected music is then played using a get customer input block so that the customer is given an interactive ability to interrupt the music with key presses on their phone.</p>
+
+<p>The options that are available to the customer are the ability to choose the next track to be played, the previous track, or even to stop the current track from playing altogether. This allows the customer to wait in silence if they wish, which is a surprisingly common request amongst callers.</p>
+
+<p>In this example we have also included the ability to provide additional information about the queue and wait times. For example, the system can provide, on request, information for the customer about their estimated wait time, position in the queue, or any relevant announcements. This can help to reduce customer frustration and provide a more engaging and informative experience.</p>
+
+<figure>
+  <!--<a href="https://github.com/ianchristopherryan/blogs/2023-04-26" target="_blank">-->
+    <img src="/assets/images/blog/20230426/ExampleQueueMusic.png" alt="Amazon Connect Flow diagram showing a way to select queue music" />
+  <!--</a>-->
+  <figcaption>
+    <h4>Flow for music selection choices in Amazon Connect</h4>
+    <p>Example Contact Flow Music Selection</p>
+  </figcaption>
+</figure>
+
+<p>The lambda function that is called from the custom Queue Flow to select the queue music is a simple function that can be easily modified to be reused in other contact flows. In fact in your call center implementations you should/would have a set of utility functions that you use in your flows, this is a utility function for list manipulation. The function is designed to take in an array of songs, which can be either reference Amazon Connect prompts or even music files stored in Amazon S3. It also takes in an action to be performed, such as selecting the next or previous track, and the last song that was played.</p>
+
+<p>The lambda function then uses this information to determine which song should be played next. If the action is to select the next track, the function simply returns the next song in the array, looping back to the start of the array if necessary. Similarly, if the action is to select the previous track, the function returns the previous song in the array, looping back to the end of the array if necessary.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">const</span> <span class="nx">handler</span> <span class="o">=</span> <span class="k">async</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="cm">/*
+  This simple lambda will take a list of songs and return the next, 
+  previous, or silence depending on the action specified.
+  */</span>
+
+  <span class="kd">let</span> <span class="nx">value</span> <span class="o">=</span> <span class="nx">event</span><span class="p">[</span><span class="dl">'</span><span class="s1">Details</span><span class="dl">'</span><span class="p">][</span><span class="dl">'</span><span class="s1">Parameters</span><span class="dl">'</span><span class="p">][</span><span class="dl">'</span><span class="s1">currentSong</span><span class="dl">'</span><span class="p">];</span>
+  <span class="kd">let</span> <span class="nx">array</span> <span class="o">=</span> <span class="nx">event</span><span class="p">[</span><span class="dl">'</span><span class="s1">Details</span><span class="dl">'</span><span class="p">][</span><span class="dl">'</span><span class="s1">Parameters</span><span class="dl">'</span><span class="p">][</span><span class="dl">'</span><span class="s1">songList</span><span class="dl">'</span><span class="p">];</span>
+  <span class="kd">let</span> <span class="nx">silence</span> <span class="o">=</span> <span class="nx">event</span><span class="p">[</span><span class="dl">'</span><span class="s1">Details</span><span class="dl">'</span><span class="p">][</span><span class="dl">'</span><span class="s1">Parameters</span><span class="dl">'</span><span class="p">][</span><span class="dl">'</span><span class="s1">silence</span><span class="dl">'</span><span class="p">];</span>
+  <span class="kd">let</span> <span class="nx">action</span> <span class="o">=</span> <span class="nx">event</span><span class="p">[</span><span class="dl">'</span><span class="s1">Details</span><span class="dl">'</span><span class="p">][</span><span class="dl">'</span><span class="s1">Parameters</span><span class="dl">'</span><span class="p">][</span><span class="dl">'</span><span class="s1">action</span><span class="dl">'</span><span class="p">];</span>
+
+  <span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="dl">""</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">action</span><span class="p">).</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">//no existing element so return the first</span>
+    <span class="nx">result</span> <span class="o">=</span> <span class="nx">array</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">action</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">stop</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">//just return the silence parameter</span>
+    <span class="nx">result</span> <span class="o">=</span> <span class="nx">silence</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">index</span> <span class="o">=</span> <span class="nx">array</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+    <span class="c1">//get the next or previous element</span>
+    <span class="kd">let</span> <span class="nx">newIndex</span> <span class="o">=</span> <span class="nx">action</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">next</span><span class="dl">"</span> <span class="p">?</span> <span class="nx">index</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:</span> <span class="nx">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+
+    <span class="c1">//make sure we loop around the array to return an item</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">newIndex</span> <span class="o">&gt;=</span> <span class="nx">array</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">newIndex</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">newIndex</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">newIndex</span> <span class="o">=</span> <span class="nx">array</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nx">result</span> <span class="o">=</span> <span class="nx">array</span><span class="p">[</span><span class="nx">newIndex</span><span class="p">];</span>
+  <span class="p">}</span>
+
+  <span class="c1">//return the new current song to play</span>
+  <span class="kd">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">currentSong</span><span class="p">:</span> <span class="nx">result</span>
+  <span class="p">};</span>
+
+  <span class="k">return</span> <span class="nx">response</span><span class="p">;</span>
+
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>Of course in a full contact center, there would be many more treatments being offered in the queue to help enhance the customer experience and improve efficiency. There would most likely be treatments such as offering call-back options to customers, where they can choose to receive a call back from a representative instead of waiting on hold or other treatments such as playing informational or branding messages while customers are waiting in the queue.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In conclusion, allowing customers to control the queue music in an Amazon Connect contact center can greatly enhance the overall customer experience. By providing customers with the ability to skip tracks or listen to silence, call centers can reduce customer frustration and create a more personalized experience.</p>
+
+<p>In addition, by providing customers with engaging and informative music options, call centers can create a more memorable experience that builds customer loyalty and satisfaction. The ability to choose their own music can also help customers feel more in control of their wait time, leading to a more positive overall experience.</p>
+
+<p>Implementing this functionality in Amazon Connect is straightforward, requiring only a custom Queue Flow and a simple lambda function to select and control the queue music. By creating a generic utility function that can be called from multiple contact flows, call centers can streamline their development process and ensure consistency across different flows.</p>
+
+<p>Overall, giving customers control over the queue music in Amazon Connect can greatly enhance the customer experience and help call centers build stronger relationships with their customers. By providing engaging and personalized options, call centers can reduce frustration and build loyalty, leading to greater customer satisfaction and long-term success.</p>
+
+<h2 id="source">Source</h2>
+
+<p>As always with these blog posts, the full source of the code is available on my github page.</p>
+
+</div>
+        
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="bottom">
+  <div class="container relative">
+    <div class="row align-items-center justify-content-between">
+      <div class="col-auto">
+        
+          <div class="menu-bottom">
+  <ul>
+    
+      <li class="menu-item-Privacy Policy">
+        <a href="/privacy-policy/">Privacy Policy</a>
+      </li>
+    
+      <li class="menu-item-Terms and Conditions">
+        <a href="/terms-and-conditions/">Terms and Conditions</a>
+      </li>
+    
+  </ul>
+</div>
+        
+        
+          <div class="copyright">© 2023 Ian Christopher Ryan</div>
+        
+      </div>
+      
+        <div class="col-auto">
+          <div class="dark-mode-switcher " id="dark-mode-container">
+  <div class="dark-mode-switch">
+    <svg class="dark-mode-icon-dark" data-name="Layer 1" fill="#000000" height="20px" viewbox="0 0 64 64" width="20px" x="0px" xmlns="http://www.w3.org/2000/svg" y="0px">
+      <title>essential</title>
+      <path d="M33.28,58.24A26.95,26.95,0,0,1,24,6l.39-.13a2,2,0,0,1,2.4,2.87,22.42,22.42,0,0,0-1.51,18.75h0A22.47,22.47,0,0,0,54.09,40.8l.76-.3a2,2,0,0,1,2.24.48,2,2,0,0,1,.35,2.24,27,27,0,0,1-24.16,15ZM21.11,11.85a22.94,22.94,0,1,0,30,33.91A26.46,26.46,0,0,1,21.53,28.87h0A26.4,26.4,0,0,1,21.11,11.85Z"></path>
+    </svg>
+    <svg class="dark-mode-icon-light" fill="#000000" height="20px" style="enable-background: new 0 0 100 100;" version="1.1" viewbox="0 0 100 100" width="20px" x="0px" xml:space="preserve" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" y="0px">
+      <g>
+        <path d="M50,75c-13.8,0-25-11.2-25-25s11.2-25,25-25s25,11.2,25,25S63.8,75,50,75z M50,33.3c-9.2,0-16.7,7.5-16.7,16.7   c0,9.2,7.5,16.7,16.7,16.7c9.2,0,16.7-7.5,16.7-16.7C66.7,40.8,59.2,33.3,50,33.3z"></path>
+      </g>
+      <g>
+        <path d="M50,100c-2.3,0-4.2-1.9-4.2-4.2v-8.3c0-2.3,1.9-4.2,4.2-4.2c2.3,0,4.2,1.9,4.2,4.2v8.3C54.2,98.1,52.3,100,50,100z    M17.5,86.7c-1.1,0-2.1-0.4-2.9-1.2c-1.6-1.6-1.6-4.3,0-5.9l5.8-5.8c1.6-1.6,4.3-1.6,5.9,0c1.6,1.6,1.6,4.3,0,5.9l-5.8,5.8   C19.6,86.3,18.6,86.7,17.5,86.7z M82.5,86.7c-1.1,0-2.1-0.4-2.9-1.2l-5.8-5.8c-1.6-1.6-1.6-4.3,0-5.9s4.3-1.6,5.9,0l5.8,5.8   c1.6,1.6,1.6,4.3,0,5.9C84.6,86.3,83.6,86.7,82.5,86.7z M95.8,54.2h-8.3c-2.3,0-4.2-1.9-4.2-4.2c0-2.3,1.9-4.2,4.2-4.2h8.3   c2.3,0,4.2,1.9,4.2,4.2C100,52.3,98.1,54.2,95.8,54.2z M12.5,54.2H4.2C1.9,54.2,0,52.3,0,50c0-2.3,1.9-4.2,4.2-4.2h8.3   c2.3,0,4.2,1.9,4.2,4.2C16.7,52.3,14.8,54.2,12.5,54.2z M76.7,27.5c-1.1,0-2.1-0.4-2.9-1.2c-1.6-1.6-1.6-4.3,0-5.9l5.8-5.8   c1.6-1.6,4.3-1.6,5.9,0c1.6,1.6,1.6,4.3,0,5.9l-5.8,5.8C78.8,27.1,77.7,27.5,76.7,27.5z M23.3,27.5c-1.1,0-2.1-0.4-2.9-1.2   l-5.8-5.8c-1.6-1.6-1.6-4.3,0-5.9c1.6-1.6,4.3-1.6,5.9,0l5.8,5.8c1.6,1.6,1.6,4.3,0,5.9C25.5,27.1,24.4,27.5,23.3,27.5z M50,16.7   c-2.3,0-4.2-1.9-4.2-4.2V4.2C45.8,1.9,47.7,0,50,0c2.3,0,4.2,1.9,4.2,4.2v8.3C54.2,14.8,52.3,16.7,50,16.7z"></path>
+      </g>
+    </svg>
+    <div class="ball"></div>
+  </div>
+</div>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript" src="/assets/js/scripts.js"></script>
+
+<script type="text/javascript" src="/assets/js/hamburger.js"></script>
+<script type="text/javascript" src="/assets/js/darkModeSwitch.js"></script>
+
+
+
+</body>
+</html>

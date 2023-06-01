@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta content="ie=edge" http-equiv="x-ua-compatible">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+
+    <title>Amazon Connect: Embracing Modular Flows for Enhanced Efficiency and Scalability - Part 1 - Ian Ryan</title>
+
+
+  <meta name="description" content="Amazon Connect: Embracing Modular Flows for Enhanced Efficiency and Scalability"/>
+
+
+
+
+
+
+
+
+
+
+
+
+    <link rel="icon" href="/assets/images/favicon/favicon.png">
+    <link href="/assets/css/main.css" rel="stylesheet">
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Mono&family=Merriweather:wght@300;400;700&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    
+      <script>
+          localStorage.getItem('darkMode') === 'true' && document.documentElement.setAttribute('data-mode', 'dark');
+      </script>
+    
+
+  </head>
+<body class="page page-post page-post-1 has-static-header">
+
+
+<div class="menu-main-mobile " id="menu-main-mobile">
+  
+  <div class="menu-main-mobile-top">
+    <div id="close-overlay" class="menu-main-close">
+      <div class="hamburger"></div>
+    </div>
+  </div>
+
+  <div class="menu-main-mobile-center">
+    
+      <ul class="menu">
+        
+          <li class="menu-item-home">
+            <a href="/">Home</a>
+          </li>
+        
+          <li class="menu-item-blog">
+            <a href="/blog/">Blog</a>
+          </li>
+        
+      </ul>
+    
+  </div>
+
+  <div class="menu-main-mobile-bottom">
+    
+      
+
+<div class="social" id="social">
+  
+  <a href="https://github.com/ianchristopherryan/" target="blank" title="Github">
+    <i class="fab fa-github"></i>
+  </a>
+  
+  <a href="https://www.linkedin.com/in/ian-christopher-ryan/" target="blank" title="Linkedin">
+    <i class="fab fa-linkedin"></i>
+  </a>
+  
+</div>
+
+
+    
+    
+  </div>
+
+</div>
+
+
+
+
+<div id="header" class='header '>
+  <div class="container">
+    <div class="logos">
+  <div class="logo logo-desktop">
+    
+  
+    
+      <div class="logo-text"><a href="/">Ian Christopher Ryan</a></div>
+    
+    
+  </div>
+
+  <div class="logo logo-desktop-invert">
+    
+    
+  
+    
+      <div class="logo-text"><a href="/">Ian Christopher Ryan</a></div>
+    
+    
+  </div>
+
+  <div class="logo logo-mobile">
+    
+    
+  
+    
+      <div class="logo-text"><a href="/">Ian Christopher Ryan</a></div>
+    
+    
+  </div>
+
+
+  <div class="logo logo-mobile-invert">
+    
+    
+  
+    
+      <div class="logo-text"><a href="/">Ian Christopher Ryan</a></div>
+    
+
+  </div>
+
+</div>
+
+
+    <div class="menu-main">
+  <ul>
+    
+      
+        
+        <li class="">
+          <a href="/">Home</a>
+        </li>
+      
+    
+      
+        
+        <li class="">
+          <a href="/blog/">Blog</a>
+        </li>
+      
+    
+  </ul>
+</div>
+
+    
+    <div class="hamburger-trigger" id="toggle-menu-main-mobile">
+  <button class="hamburger">Menu</button>
+</div>
+  </div>
+</div>
+
+<div id="wrapper" class="wrapper">     
+  <div class="section">
+  <div class="container post-header">
+
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-8">
+          
+            <div class="post-date">23 May 2023</div>
+          
+          
+          <div class="post-categories">
+          
+
+
+  
+    
+
+
+
+
+<div class="category-link">
+<a href="/category/aws">
+  AWS
+</a>
+
+</div>
+  
+    
+
+
+
+
+<div class="category-link">
+<a href="/category/amazon-connect">
+  Amazon Connect
+</a>
+
+</div>
+  
+
+          
+          </div>
+          <div class="post-title">
+            <h1>Amazon Connect: Embracing Modular Flows for Enhanced Efficiency and Scalability - Part 1</h1>
+          </div>
+          
+            <div class="post-description">
+              <p>Amazon Connect: Embracing Modular Flows for Enhanced Efficiency and Scalability</p>
+            </div>
+          
+
+          
+            <div class="post-authors">
+              
+              
+              
+              
+
+
+
+
+<div class="author">
+  
+    <div class="author-image">
+      <img src="/assets/images/team/ianryan.jpeg" alt="Ian Ryan"/>
+    </div>
+  
+
+  
+    <div class="author-content">
+      <div class="author-name">Ian Ryan</div>
+      
+        <div class="author-job">AWS Architect</div>
+      
+    </div>
+  
+</div>
+              
+            </div>
+          
+
+      </div>
+    </div>
+          
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-8">
+        
+          <div class="post-image">
+            <img src="/assets/images/gen/blog/blog-2.webp" alt="Amazon Connect: Embracing Modular Flows for Enhanced Efficiency and Scalability - Part 1" />
+          </div>
+        
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section pt-0">
+  <div class="container">
+    <div class="row justify-content-center">
+
+      <div class="col-12 col-lg-8">
+        <div class="content"><blockquote>
+  <p>This is the first in a series of posts where I will be looking at building an example of a comprehensive modular Amazon Connect solution. As usual all code is available on github under a MIT license and contributions are welcomed.</p>
+</blockquote>
+
+<h1 id="introduction">Introduction</h1>
+
+<p>Contact centers serve as vital hubs for customer interactions, making it essential for organizations to streamline their operations, maximize efficiency, and deliver exceptional customer experiences. Amazon Connect, a cloud-based contact center service, has revolutionized the industry with its scalability and flexibility. Traditionally, contact center flows were hard-coded, limiting customization and hindering development speed. However, the emergence of modular flows has transformed the landscape, enabling contact centers to leverage modules as reusable building blocks. In this extensive series of blog posts, we will explore the myriad benefits of adopting a modular Amazon Connect solution, emphasizing their superiority for large contact centers with multiple business units and/or consultancies catering to diverse clients. We will delve into the advantages of faster development, composability, API development for modules, module sharing, and improved Continuous Integration and Continuous Deployment (CICD) practices.</p>
+
+<h3 id="modular-flows-for-consultancies-and-large-contact-centers">Modular Flows for Consultancies and Large Contact Centers</h3>
+
+<p>Consultancies specializing in contact center solutions often cater to diverse clients with unique requirements, and similarly large contact center operating across multiple business units will also face these unique challenges when it comes to managing customer interactions effectively. The adoption of modular flows within Amazon Connect provides significant advantages for these organizations.</p>
+
+<ul>
+  <li>
+    <p>Reusability and Consistency: Modular flows promote the reuse of common components across different clients. By developing reusable modules for standard call handling processes, contact centers can ensure consistency in customer interactions. This reduces maintenance efforts, guarantees a unified customer experience, and streamlines updates across the organization.</p>
+  </li>
+  <li>
+    <p>Customizability: Modules can allow the customization within defined limits of the experience. Each module can be configured to meet specific client needs, resulting in contact center solutions that align with individual business processes and industry requirements. By leveraging modular flows, consultancies or large contact centers can deliver bespoke solutions without reinventing the wheel for each solution.</p>
+  </li>
+  <li>
+    <p>Time and Cost Savings: Building contact center solutions from scratch for each client is time-consuming and resource-intensive. Modular flows expedite development cycles by allowing consultancies to reuse existing modules and customize them as needed. This approach significantly reduces development effort, lowers costs, and enables consultancies to deliver solutions more efficiently.</p>
+  </li>
+  <li>
+    <p>Scalable and Future-Proof Solutions: Consultancies need to provide solutions that can scale with their clients’ evolving needs. Modular flows offer the flexibility to add or modify modules independently, ensuring solutions remain scalable and adaptable. By developing modular solutions, consultancies future-proof their offerings, enabling clients to stay ahead in a dynamic business landscape.</p>
+  </li>
+</ul>
+
+<h3 id="faster-development-with-modular-flows">Faster Development with Modular Flows</h3>
+
+<p>In today’s competitive environment, speed-to-market is critical for software development projects. Modular flows offer a range of benefits that accelerate development cycles:</p>
+
+<ul>
+  <li>
+    <p>Loose Coupling: Modular flows are designed to be loosely coupled, enabling independent development of individual modules. This allows multiple teams to work simultaneously on different modules, reducing development time and enabling parallel progress. Loosely coupled modules also facilitate easier debugging and maintenance, as changes made to one module have minimal impact on others.</p>
+  </li>
+  <li>
+    <p>Code Reusability: Instead of reinventing common functionalities that will be covered by a standard suite of modules, developers can focus on building any unique and specialized modules that are required by the clients. This not only speeds up project delivery times but also ensures consistency, reduces errors, and enhances the overall quality of the solution.</p>
+  </li>
+  <li>
+    <p>Simplified Testing and Maintenance: Modular flows facilitate granular testing, as each module can be tested independently. This approach enables focused quality assurance efforts, reducing overall testing time and allowing for faster identification and resolution of issues. Furthermore, maintenance becomes more straightforward as individual modules can be modified without disrupting the entire system.</p>
+  </li>
+</ul>
+
+<h3 id="composability-and-api-for-modular-flows">Composability and API for Modular Flows</h3>
+
+<p>Modular flows introduce the concept of composability, allowing modules to be combined and reused as building blocks to create different contact center solutions. This brings several advantages:</p>
+
+<ul>
+  <li>
+    <p>Flexible Solution Design: With modular flows, organizations can compose unique contact center solutions by combining different modules to meet specific requirements. By treating modules as interchangeable components, businesses can tailor their solutions to address diverse customer needs and adapt to evolving market trends.</p>
+  </li>
+  <li>
+    <p>Defining Inputs and Outputs: To ensure interoperability between modules, an API can be developed. Each module follows a defined naming convention for its inputs and outputs, facilitating seamless integration with other modules. This standardized approach enables smooth communication and data exchange between modules, enabling the creation of complex contact center solutions.</p>
+  </li>
+  <li>
+    <p>Community Collaboration: Modular flows enable collaboration within a community of developers, allowing for the sharing and contribution of modules. Third parties can develop modules that address specific functionalities, industry verticals, or unique use cases. This collaborative ecosystem fosters innovation, expands the range of available modules, and enriches the overall Amazon Connect ecosystem.</p>
+  </li>
+</ul>
+
+<h3 id="no-lock-in-and-independence">No Lock-In and Independence</h3>
+
+<p>Modular flows built within Amazon Connect leverage standard Amazon Connect flows, eliminating any external dependencies. This ensures that organizations are not locked into bespoke custom solutions and can leverage the full capabilities of Amazon Connect. The absence of lock-in offers businesses the freedom to explore alternative solutions without sacrificing their investments or being restricted to a specific management solution.</p>
+
+<h3 id="cicd-implementation-with-modular-flows">CICD Implementation with Modular Flows</h3>
+
+<p>Continuous Integration and Continuous Deployment (CICD) practices are essential for ensuring the efficient delivery of software solutions. Modular flows align perfectly with CICD principles and enable organizations to streamline their deployment processes:</p>
+
+<ul>
+  <li>
+    <p>Independent Module Testing: Modular flows facilitate individual module testing as each module can be developed and tested independently. This granularity allows for more focused and efficient testing efforts, reducing the overall testing time and enabling quicker feedback loops.</p>
+  </li>
+  <li>
+    <p>Separate Deployment of Modules: Modular flows support the deployment of individual modules as part of the CICD process. Each module can be deployed separately, minimizing disruption to the entire contact center system. This modular deployment approach ensures seamless integration of new features, bug fixes, and improvements while maintaining the stability of the overall solution.</p>
+  </li>
+</ul>
+
+<hr />
+
+<h1 id="solution-design">Solution Design</h1>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20230523/module_architecture.png" alt="High level architecture" />
+  <!--</a>-->
+  <figcaption>
+    <h4>High level architecture</h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>Now we have an overview of the benefits of a more modular Amazon Connect design we are going to start to go through the core of a modular design. We will initially look at the foundational functional side of the solution before in later blog posts we will look at management and CICD solutions. This is the left hand side of the architecture diagram above. Much of the work here will initially be in developing the flows and modules within connect, whereas later we will look at more of the supporting services in AWS to round out the solution.</p>
+
+<p>When designing the core of this solution we need to look at several areas, the building of the modules, how to store and retrieve the configuration for modules, and how to execute the modules within Connect.</p>
+
+<h3 id="executor-flow">Executor Flow</h3>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20230523/module_executor.png" alt="Module executor flow" />
+  <!--</a>-->
+  <figcaption>
+    <h4>Module executor flow</h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>Lets start with the executor flow. The main executor flow essentially takes a list of modules and calls them in sequence. This is the main flow within the connect solution, there may be other supporting flows for queues ans whispers etc, but all of the actual business logic and functionality is moved into the reusable modules. Looking in more detail at each part of this flow:</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20230523/module_executor_detail_1.png" alt="Module executor flow detail" />
+  <!--</a>-->
+  <figcaption>
+    <h4>Module executor flow detail</h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>Initially in this flow we need to retrieve the configuration from the database. This configuration describes all of the modules that will be executed and the settings for each of the modules. Fow this blog example will key this information from the dialled number of the contact center.</p>
+
+<p>To retrieve the data we use a simple lambda function such as the one below. This will retrieve configuration from Dynamo and just store the blob of JSON as a string. Why are we storing it as a JSON string? Well since we will be passing this configuration to other lambdas and not actually using it in flow blocks within amazon connect we do not need to parse it within connect. Amazon connect recently introduced JSON support in their lambda functions, allowing the native JSON object to be returned from a lambda call rather than, as below, a string. However this JSON support is not yet fully featured enough to allow us to set attributes with parts of the JSON response, and so in our case we cannot yet use this functionality.</p>
+
+<h4 id="modular_connect_configuration_loader">modular_connect_configuration_loader</h4>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">DynamoDBClient</span><span class="p">,</span> <span class="nx">ScanCommand</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@aws-sdk/client-dynamodb</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">unmarshall</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@aws-sdk/util-dynamodb</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">handler</span> <span class="o">=</span> <span class="k">async</span> <span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">context</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">DynamoDBClient</span><span class="p">();</span>
+  <span class="kd">const</span> <span class="nx">phoneNumber</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">Details</span><span class="p">.</span><span class="nx">ContactData</span><span class="p">.</span><span class="nx">SystemEndpoint</span><span class="p">.</span><span class="nx">Address</span><span class="p">;</span>
+
+  <span class="kd">const</span> <span class="nx">params</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">TableName</span><span class="p">:</span> <span class="dl">'</span><span class="s1">modular_connect_configurations</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">FilterExpression</span><span class="p">:</span> <span class="dl">'</span><span class="s1">phoneNumber = :phoneNumber</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">ExpressionAttributeValues</span><span class="p">:</span> <span class="p">{</span>
+      <span class="dl">'</span><span class="s1">:phoneNumber</span><span class="dl">'</span><span class="p">:</span> <span class="p">{</span> <span class="na">S</span><span class="p">:</span> <span class="nx">phoneNumber</span> <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+
+  <span class="k">try</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">command</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ScanCommand</span><span class="p">(</span><span class="nx">params</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">client</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">command</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">Items</span> <span class="o">&amp;&amp;</span> <span class="nx">response</span><span class="p">.</span><span class="nx">Items</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">configuration</span><span class="dl">"</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">unmarshall</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">Items</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+      <span class="p">}</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Item not found.</span><span class="dl">'</span><span class="p">);</span>
+      <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="dl">'</span><span class="s1">Error retrieving item:</span><span class="dl">'</span><span class="p">,</span> <span class="nx">error</span><span class="p">);</span>
+    <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>The response of this lambda function is an attribute called configuration that was looked up by the dialled number. The contents of the configuration would be like below:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+ </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"3311f720-7a45-4170-8db6-af0812504760"</span><span class="p">,</span><span class="w">
+ </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Example Call Center"</span><span class="p">,</span><span class="w">
+ </span><span class="nl">"phoneNumber"</span><span class="p">:</span><span class="w"> </span><span class="s2">"+6465909655"</span><span class="p">,</span><span class="w">
+ </span><span class="nl">"modules"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+   </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"7ae76d80-9274-4129-8f00-c1640b805bc3"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"flowid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0a0e2425-8138-40e7-860f-2df1a90b977c"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Sets the voice from the list available in this module"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SetVoice"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"settings"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"Voice"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Aria"</span><span class="w">
+   </span><span class="p">}</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+   </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"a41f977c-d2b7-4444-8248-4ce8b981e9e4"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"flowid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"e8e2efa6-dc0f-4a5c-8ad2-8f37b687d7b1"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Plays the welcome prompt"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"PlayPrompt"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"settings"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"PromptType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"text"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"PromptValue"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Welcome to Example Limited"</span><span class="w">
+   </span><span class="p">}</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+   </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"528307de-a801-4b5a-9394-572cf3076f52"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"flowid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"73106255-4883-4f57-b02c-42d9f73a2458"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"A DTMF menu to select either a password reset or technical support"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DTMFMenu"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"settings"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"1Action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"playMessageHangup"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"1Value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"To reset your password please visit www.example.com/passwordreset. Thank you, good bye."</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"2Action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"setWorkingQueue"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"2Value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"technical_support_queue"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"MenuMessage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"For password resets please press 1. For other technical support press 2."</span><span class="w">
+   </span><span class="p">}</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+   </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1c504dba-15bf-48b3-aef4-310711f5e4ef"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"flowid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"47a5346e-e1a4-4f83-9d10-ba86c88ebccc"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Plays the estimated wait time"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"exitAction"</span><span class="p">:</span><span class="w"> </span><span class="s2">"transferWorkingQueue"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"EstimatedWaitTime"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"settings"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+ </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Here we have all of the modules that will be executed as part of this configuration. We will discuss the actual individual module configuration later in this post. For now though we can see fairly clearly what what configuration would be doing, setting a voice, playing a welcome prompt, offering a simple DTMF menu and then playing the estimated wait time before transferring to a queue. The thing to note even at this point is that we are just configuring settings for these modules, the modules them selves can have any amount of standardized behavior. For example the DTMF module configuration above does not need to specify behavior for invalid entries, or time outs etc. All of that is handled by the module in a consistent way.</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20230523/module_executor_detail_2.png" alt="Module executor flow detail" />
+  <!--</a>-->
+  <figcaption>
+    <h4>Module executor flow detail</h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>Now we have retrieved the configuration, we need to start executing the modules that have been defined. To do this we will call our module executor lambda function and pass in the configuration. This is the main lambda that handles all of the logic in determining which module should be executed next. In the example lambda code below it simply iterates through the defined list of modules in our configuration. If there is a module to be executed it sets the details as attributes.</p>
+
+<h4 id="modular_connect_executor">modular_connect_executor</h4>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">const</span> <span class="nx">handler</span> <span class="o">=</span> <span class="k">async</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">event</span><span class="p">));</span>
+    
+    <span class="kd">let</span> <span class="nx">moduleListConfiguration</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">Details</span><span class="p">.</span><span class="nx">Parameters</span><span class="p">.</span><span class="nx">internal_module_list_configuration</span><span class="p">);</span>
+    <span class="kd">let</span> <span class="nx">lastModuleId</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">Details</span><span class="p">.</span><span class="nx">Parameters</span><span class="p">.</span><span class="nx">internal_module_executor_last_module_id</span><span class="p">;</span>
+    
+    <span class="c1">//the next module to execute</span>
+    <span class="kd">let</span> <span class="nx">module</span> <span class="o">=</span> <span class="nx">moduleListConfiguration</span><span class="p">.</span><span class="nx">modules</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">lastModuleId</span><span class="p">){</span>
+        <span class="nx">module</span> <span class="o">=</span> <span class="nx">getNextObject</span><span class="p">(</span><span class="nx">moduleListConfiguration</span><span class="p">.</span><span class="nx">modules</span><span class="p">,</span> <span class="nx">lastModuleId</span><span class="p">);</span>
+    <span class="p">}</span>
+    
+    <span class="k">if</span><span class="p">(</span><span class="nx">module</span> <span class="o">===</span> <span class="kc">null</span><span class="p">){</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="na">internal_module_executor_action</span><span class="p">:</span> <span class="dl">"</span><span class="s2">stop</span><span class="dl">"</span>
+        <span class="p">}</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">{</span>
+             <span class="na">internal_module_executor_arn</span><span class="p">:</span> <span class="nx">module</span><span class="p">.</span><span class="nx">arn</span><span class="p">,</span>
+             <span class="na">internal_module_executor_settings</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">module</span><span class="p">.</span><span class="nx">settings</span><span class="p">),</span>
+             <span class="na">internal_module_executor_last_module_id</span><span class="p">:</span> <span class="nx">module</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
+             <span class="na">internal_module_executor_module_exit_action</span><span class="p">:</span> <span class="nx">module</span><span class="p">.</span><span class="nx">exitAction</span><span class="p">,</span>
+             <span class="na">internal_module_executor_module_exit_action_value</span><span class="p">:</span> <span class="nx">module</span><span class="p">.</span><span class="nx">exitActionValue</span><span class="p">,</span>
+             <span class="na">internal_module_executor_action</span><span class="p">:</span> <span class="dl">"</span><span class="s2">continue</span><span class="dl">"</span><span class="p">,</span>
+        <span class="p">};</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kd">function</span> <span class="nx">getNextObject</span><span class="p">(</span><span class="nx">jsonArray</span><span class="p">,</span> <span class="nx">objectId</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">index</span> <span class="o">=</span> <span class="nx">jsonArray</span><span class="p">.</span><span class="nx">findIndex</span><span class="p">(</span><span class="nx">obj</span> <span class="o">=&gt;</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">id</span> <span class="o">===</span> <span class="nx">objectId</span><span class="p">);</span>
+  
+  <span class="k">if</span> <span class="p">(</span><span class="nx">index</span> <span class="o">!==</span> <span class="o">-</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">index</span> <span class="o">&lt;</span> <span class="nx">jsonArray</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">jsonArray</span><span class="p">[</span><span class="nx">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">];</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20230523/module_executor_detail_3.png" alt="Module executor flow detail" />
+  <!--</a>-->
+  <figcaption>
+    <h4>Module executor flow detail</h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>Then we invoke the module that the executor lambda has defined we should execute. From the point of view of this executor flow we don’t need to know what the module does, we just invoke it and then wait until it returns. If there was an unrecoverable error in the module we would disconnect the flow at this point, but the normal case is to continue.</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20230523/module_executor_detail_4.png" alt="Module executor flow detail" />
+  <!--</a>-->
+  <figcaption>
+    <h4>Module executor flow detail</h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>When the module returns we check to see if there was any specific exit behavior we should perform. This is essentially where a module can specify that when it completes there should be some exit behavior. For example it may say that the call should be terminated, or that the call should got to a queue.</p>
+
+<p>If there is no specific exit condition from the module, we will simply loop back to our module executor lambda to find the next module that we want to execute, this is the “no match” connector in the flow above. This is the core of the solution, it will constantly loop around executing the modules until an exit condition is set.</p>
+
+<h3 id="module-implementation">Module Implementation</h3>
+
+<p>Now we have the main executor flow running its time to start looking at the modules and how they will be designed.</p>
+
+<p>One of the most important things to consider when implementing any solution at scale is a consistent approach to the configuration and build of any reusable components. In our case we are building reusable modules in Amazon connect. Although these are inherently designed by AWS to be reusable there is no formal pattern for how to build a module and no well defined best practices for the way in which we will be using the,. So the first thing we need to do is designing and documenting a pattern for how we will build modules. This is a module API if you will.</p>
+
+<p>We want to treat a module as a self contained, isolated, and functional piece of software. To do this we need to have some consistent patterns.</p>
+
+<h4 id="naming-conventions-for-modules">Naming conventions for modules</h4>
+
+<p>Naming is important so lets define some simple patterns:</p>
+<ul>
+  <li>Module names: (“ModuleName”): Simple camel case and descriptive as this will be displayed to operations teams</li>
+  <li>Module Settings (“<em>module_setting_</em>name”): these are the settings for the module. When the module is configured in our database, these are the settings that are passed to the module. Think of a module that plays a prompt, the setting would be the text of that prompt.</li>
+  <li>Internal attributes (“<em>internal_</em>attribute_name”): these are attributes that are used by the module/flow to maintain is own state, they are not expected to be used anywhere else other than within that module, and can be safely stripped from all contact flow records  as they have no relevance to anything except the context of the module while it executes.</li>
+  <li>Output attributes (“<em>output_</em>attribute_name”): these are the attributes that the flow may set as an output from the flow. These are things that the module may want to share with other flows. Think of a module that calculates the Estimated Wait Time of a queue, this is a useful thing that other modules may want to know. So this is set as an output attribute from the flow.</li>
+</ul>
+
+<h4 id="module-design">Module design</h4>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20230523/play_prompt_module.png" alt="Module for playing a prompt" />
+  <!--</a>-->
+  <figcaption>
+    <h4>Module for playing a prompt</h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>If we look at the design of a simple module it will have some distinct parts. At the start of the module we are calling a lambda function to flatten the settings that are passed into the module, this is so we can use all of the settings in the module itself. In our case for consistency reasons we are add a prefix to each setting of “module_setting” so that we can cleanly identify which settings were passed into the module. This will be important later when we are generating descriptors for modules.</p>
+
+<p>The simple lambda code to flatten the settings would look something like this:</p>
+
+<h4 id="modular_connect_json_to_attributes">modular_connect_json_to_attributes</h4>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">const</span> <span class="nx">handler</span> <span class="o">=</span> <span class="k">async</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">addPrefixToKeys</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">Details</span><span class="p">.</span><span class="nx">Parameters</span><span class="p">.</span><span class="nx">jsonString</span><span class="p">),</span> <span class="dl">"</span><span class="s2">module_setting_</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="kd">function</span> <span class="nx">addPrefixToKeys</span><span class="p">(</span><span class="nx">jsonObject</span><span class="p">,</span> <span class="nx">prefix</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">{};</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="kd">const</span> <span class="nx">key</span> <span class="k">in</span> <span class="nx">jsonObject</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">jsonObject</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">key</span><span class="p">))</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="nx">newKey</span> <span class="o">=</span> <span class="s2">`</span><span class="p">${</span><span class="nx">prefix</span><span class="p">}${</span><span class="nx">key</span><span class="p">}</span><span class="s2">`</span><span class="p">;</span>
+      <span class="nx">result</span><span class="p">[</span><span class="nx">newKey</span><span class="p">]</span> <span class="o">=</span> <span class="nx">jsonObject</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>So now we have the settings in the module we can perform whatever is needed. In this example we are going to play a prompt, and depending on the “type” setting in the module settings we will either play thr prompt as text, SSML, from s3, or from the prompt library. This is a simple module but we could easily augment it with more features and settings, perhaps we want to write out to a special audit log whenever a prompt is played, maybe we want to require that the prompt is only played when a certain condition is met. This is an overly simple example of a module but the idea is hopefully clear, the module can perform a lot of functionality and the settings just decide what it does. This means we have a highly consistent and reusable building block for our contact center.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this blog post we introduced the idea and benefits from a business perspective around using modules in an Amazon Connect contact center solution. We have started to build some core foundational components execute the modules that had been configured within Dynamo. However as you will have realized there is more that needs to be done, we need a way build the configuration for these modules, a way to describe the configuration and behavior of different call centers or numbers that are called. We will look at this in the next blog post, where we will define a front end to define and manage the modules. It is at that point that the value to an operations team will become even more apparent.</p>
+
+</div>
+        
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="bottom">
+  <div class="container relative">
+    <div class="row align-items-center justify-content-between">
+      <div class="col-auto">
+        
+          <div class="menu-bottom">
+  <ul>
+    
+      <li class="menu-item-Privacy Policy">
+        <a href="/privacy-policy/">Privacy Policy</a>
+      </li>
+    
+      <li class="menu-item-Terms and Conditions">
+        <a href="/terms-and-conditions/">Terms and Conditions</a>
+      </li>
+    
+  </ul>
+</div>
+        
+        
+          <div class="copyright">© 2023 Ian Christopher Ryan</div>
+        
+      </div>
+      
+        <div class="col-auto">
+          <div class="dark-mode-switcher " id="dark-mode-container">
+  <div class="dark-mode-switch">
+    <svg class="dark-mode-icon-dark" data-name="Layer 1" fill="#000000" height="20px" viewbox="0 0 64 64" width="20px" x="0px" xmlns="http://www.w3.org/2000/svg" y="0px">
+      <title>essential</title>
+      <path d="M33.28,58.24A26.95,26.95,0,0,1,24,6l.39-.13a2,2,0,0,1,2.4,2.87,22.42,22.42,0,0,0-1.51,18.75h0A22.47,22.47,0,0,0,54.09,40.8l.76-.3a2,2,0,0,1,2.24.48,2,2,0,0,1,.35,2.24,27,27,0,0,1-24.16,15ZM21.11,11.85a22.94,22.94,0,1,0,30,33.91A26.46,26.46,0,0,1,21.53,28.87h0A26.4,26.4,0,0,1,21.11,11.85Z"></path>
+    </svg>
+    <svg class="dark-mode-icon-light" fill="#000000" height="20px" style="enable-background: new 0 0 100 100;" version="1.1" viewbox="0 0 100 100" width="20px" x="0px" xml:space="preserve" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" y="0px">
+      <g>
+        <path d="M50,75c-13.8,0-25-11.2-25-25s11.2-25,25-25s25,11.2,25,25S63.8,75,50,75z M50,33.3c-9.2,0-16.7,7.5-16.7,16.7   c0,9.2,7.5,16.7,16.7,16.7c9.2,0,16.7-7.5,16.7-16.7C66.7,40.8,59.2,33.3,50,33.3z"></path>
+      </g>
+      <g>
+        <path d="M50,100c-2.3,0-4.2-1.9-4.2-4.2v-8.3c0-2.3,1.9-4.2,4.2-4.2c2.3,0,4.2,1.9,4.2,4.2v8.3C54.2,98.1,52.3,100,50,100z    M17.5,86.7c-1.1,0-2.1-0.4-2.9-1.2c-1.6-1.6-1.6-4.3,0-5.9l5.8-5.8c1.6-1.6,4.3-1.6,5.9,0c1.6,1.6,1.6,4.3,0,5.9l-5.8,5.8   C19.6,86.3,18.6,86.7,17.5,86.7z M82.5,86.7c-1.1,0-2.1-0.4-2.9-1.2l-5.8-5.8c-1.6-1.6-1.6-4.3,0-5.9s4.3-1.6,5.9,0l5.8,5.8   c1.6,1.6,1.6,4.3,0,5.9C84.6,86.3,83.6,86.7,82.5,86.7z M95.8,54.2h-8.3c-2.3,0-4.2-1.9-4.2-4.2c0-2.3,1.9-4.2,4.2-4.2h8.3   c2.3,0,4.2,1.9,4.2,4.2C100,52.3,98.1,54.2,95.8,54.2z M12.5,54.2H4.2C1.9,54.2,0,52.3,0,50c0-2.3,1.9-4.2,4.2-4.2h8.3   c2.3,0,4.2,1.9,4.2,4.2C16.7,52.3,14.8,54.2,12.5,54.2z M76.7,27.5c-1.1,0-2.1-0.4-2.9-1.2c-1.6-1.6-1.6-4.3,0-5.9l5.8-5.8   c1.6-1.6,4.3-1.6,5.9,0c1.6,1.6,1.6,4.3,0,5.9l-5.8,5.8C78.8,27.1,77.7,27.5,76.7,27.5z M23.3,27.5c-1.1,0-2.1-0.4-2.9-1.2   l-5.8-5.8c-1.6-1.6-1.6-4.3,0-5.9c1.6-1.6,4.3-1.6,5.9,0l5.8,5.8c1.6,1.6,1.6,4.3,0,5.9C25.5,27.1,24.4,27.5,23.3,27.5z M50,16.7   c-2.3,0-4.2-1.9-4.2-4.2V4.2C45.8,1.9,47.7,0,50,0c2.3,0,4.2,1.9,4.2,4.2v8.3C54.2,14.8,52.3,16.7,50,16.7z"></path>
+      </g>
+    </svg>
+    <div class="ball"></div>
+  </div>
+</div>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript" src="/assets/js/scripts.js"></script>
+
+<script type="text/javascript" src="/assets/js/hamburger.js"></script>
+<script type="text/javascript" src="/assets/js/darkModeSwitch.js"></script>
+
+
+
+</body>
+</html>
