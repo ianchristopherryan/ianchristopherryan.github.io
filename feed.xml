@@ -1,4 +1,165 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-06-08T12:49:03+12:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Ian Ryan</title><entry><title type="html">Amazon Connect: Embracing Modular Flows for Enhanced Efficiency and Scalability - Part 2</title><link href="http://localhost:4000/blog/2023-06-01-amazon-connect-modular-part-2/" rel="alternate" type="text/html" title="Amazon Connect: Embracing Modular Flows for Enhanced Efficiency and Scalability - Part 2" /><published>2023-06-01T12:00:00+12:00</published><updated>2023-06-01T12:00:00+12:00</updated><id>http://localhost:4000/blog/amazon-connect-modular-part-2</id><content type="html" xml:base="http://localhost:4000/blog/2023-06-01-amazon-connect-modular-part-2/"><![CDATA[<blockquote>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2023-06-08T13:02:56+12:00</updated><id>/feed.xml</id><title type="html">Ian Ryan</title><entry><title type="html">Using Stored Prompts with Lambda and OpenAI ChatGPT</title><link href="/blog/2023-06-09-stored-prompts-chatgpt/" rel="alternate" type="text/html" title="Using Stored Prompts with Lambda and OpenAI ChatGPT" /><published>2023-06-08T12:00:00+12:00</published><updated>2023-06-08T12:00:00+12:00</updated><id>/blog/stored-prompts-chatgpt</id><content type="html" xml:base="/blog/2023-06-09-stored-prompts-chatgpt/"><![CDATA[<h2 id="using-stored-prompts-with-lambda-to-interact-with-chatgpt-in-a-functional-way"><a name="UsingStoredPromptswithLambdatointeractwithChatGPTinafunctionalway"></a>Using Stored Prompts with Lambda to interact with ChatGPT in a functional way</h2>
+
+<p>In this blog post, we will explore how to use AWS Lambda functions to interact with ChatGPT, a highly sophisticated conversational AI model developed by OpenAI. Our main task will be to structure predefined prompts stored in an AWS DynamoDB table, which the Lambda function will leverage to call ChatGPT. This design might be akin to using stored procedures in a traditional database environment, except in our case, the stored prompts are natural text-based and used to instigate functional dialogue with the AI.</p>
+
+<p>The stored prompts will be designed to have a particular input and specified output. A user, when performing an action, will need to specify the prompt they want and the input data. The Lambda function then retrieves the appropriate prompt, integrates the input data, interacts with ChatGPT, and finally provides the user with a response.</p>
+
+<p>As there is a new emerging skill, specifically around crafting the best prompts for interacting with a generative AI, using this approach we can define complex stored prompts, and isolate the development of these stored prompts.</p>
+
+<p>Let’s delve deeper into each stage of the process.</p>
+
+<h3 id="aws-lambda-and-dynamodb"><a name="AWSLambdaandDynamoDB"></a>AWS Lambda and DynamoDB</h3>
+
+<p>AWS Lambda is a serverless computing service that lets you run your code without provisioning or managing servers. You only pay for the compute time you consume, and there’s no charge when your code isn’t running. We are using Lambda to retrieve data from DynamoDB and to interact with the OpenAI API.</p>
+
+<p>Amazon DynamoDB is a fully managed NoSQL database service that provides fast and predictable performance. We are using this to store all of our stored prompts.</p>
+
+<h3 id="chatgpt-the-ai-conversation-partner"><a name="ChatGPT:TheAIConversationPartner"></a>ChatGPT: The AI Conversation Partner</h3>
+
+<p>ChatGPT is a language model developed by OpenAI, designed to simulate human-like text conversations. It is based on a transformer architecture, which is particularly effective at understanding the context of a conversation and generating coherent and contextually appropriate responses. The current version as of the time of writing (GPT-4) can generate highly sophisticated and nuanced responses, making it an ideal tool for developing conversational interfaces and AI assistants.</p>
+
+<h3 id="structuring-predefined-prompts"><a name="StructuringPredefinedPrompts"></a>Structuring Predefined Prompts</h3>
+
+<p>In our setup, we want to have a set of predefined prompts that act as a sort of API for interacting with ChatGPT. These prompts will be designed to expect a specific type of input and will have a specified output format.</p>
+
+<p>Consider a prompt like “Translate the following English text into Spanish: {input}.” The input would be any English text string, and the output would be the translated Spanish text.</p>
+
+<p>This is an overly simple example just to get the idea behind what we are doing. Perhaps a better example would be a prompt such as:</p>
+
+<p>“Given the following input {input} provide a sentiment score from 0 to 1 where 0 is unhappy and 1 is very happy. Respond only in JSON format in the style of {“confidence”:””}”</p>
+
+<p>In this way we would let the generative AI decide perform some sentiment analysis for us. Of course the entire point of this is that <em>any</em> prompt can be used, extremely complex prompts could be constructed with any number of instructions for the AI.</p>
+
+<p>These prompts will be stored in a DynamoDB table. Each prompt will have a unique key or function name, allowing the Lambda function to quickly and efficiently retrieve the appropriate prompt based on the user’s input.</p>
+
+<p>Here’s a simple example of what this DynamoDB table might look like:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>FunctionName</th>
+      <th>Prompt</th>
+      <th>InputType</th>
+      <th>OutputType</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>TranslateEngToEsp</td>
+      <td>“Translate the following English text into Spanish: {input}”</td>
+      <td>Text</td>
+      <td>Text</td>
+    </tr>
+    <tr>
+      <td>Sentiment</td>
+      <td>“Given the following input {input} provide a sentiment score from 0 to 1 where 0 is unhappy and 1 is very happy. Respond only in JSON format in the style of {“confidence”:””}”</td>
+      <td>Text</td>
+      <td>JSON</td>
+    </tr>
+    <tr>
+      <td>GetTriviaQuestionsCSV</td>
+      <td>“Write me {input} multiple choice trivia question in CSV format with the column headings “‘question’,’optionA’,’optionB’,’optionC’,’optionD’,’answer’”. Include the column headings as the first line.”</td>
+      <td>Number</td>
+      <td>CSV</td>
+    </tr>
+    <tr>
+      <td>…</td>
+      <td>…</td>
+      <td>…</td>
+      <td>…</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="setting-up-the-lambda-function"><a name="SettingUptheLambdaFunction"></a>Setting Up the Lambda Function</h3>
+
+<p>Our Lambda function will act as the intermediary between the user and ChatGPT. It will take the user’s chosen prompt and input, retrieve the appropriate stored prompt from the DynamoDB table, and insert the input data into the prompt.</p>
+
+<p>The Lambda function will then send this constructed prompt to the ChatGPT API. It will then take the API’s response, and format it for the user.</p>
+
+<p>The basic structure of the function will look something like this (written in Python):</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">openai</span>
+<span class="kn">import</span> <span class="nn">boto3</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">dynamodb</span> <span class="o">=</span> <span class="n">boto3</span><span class="p">.</span><span class="n">client</span><span class="p">(</span><span class="s">'dynamodb'</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">lambda_handler</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+    <span class="c1"># Retrieve the prompt key and input from the user's request
+</span>    <span class="n">function_name</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s">'functionName'</span><span class="p">]</span>
+    <span class="n">user_input</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s">'input'</span><span class="p">]</span>
+    
+    <span class="c1"># Retrieve the stored prompt from DynamoDB
+</span>    <span class="n">stored_prompt</span> <span class="o">=</span> <span class="n">dynamodb</span><span class="p">.</span><span class="n">get_item</span><span class="p">(</span>
+        <span class="n">TableName</span><span class="o">=</span><span class="s">'openai_prompt_library'</span><span class="p">,</span>
+        <span class="n">Key</span><span class="o">=</span><span class="p">{</span>
+            <span class="s">'functionName'</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">'S'</span><span class="p">:</span> <span class="n">function_name</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">)[</span><span class="s">'Item'</span><span class="p">][</span><span class="s">'prompt'</span><span class="p">][</span><span class="s">'S'</span><span class="p">]</span>
+    
+    <span class="c1"># Insert the user input into the prompt
+</span>    <span class="k">if</span> <span class="ow">not</span> <span class="n">user_input</span><span class="p">:</span>
+        <span class="n">chat_input</span> <span class="o">=</span> <span class="n">stored_prompt</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">chat_input</span> <span class="o">=</span> <span class="n">stored_prompt</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">user_input</span><span class="p">)</span>
+    
+    <span class="n">openai</span><span class="p">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'openai_api_key'</span><span class="p">)</span>
+    
+    <span class="c1"># Call the ChatGPT API
+</span>    <span class="n">response</span> <span class="o">=</span> <span class="n">openai</span><span class="p">.</span><span class="n">ChatCompletion</span><span class="p">.</span><span class="n">create</span><span class="p">(</span>
+        <span class="n">model</span><span class="o">=</span><span class="s">"gpt-3.5-turbo"</span><span class="p">,</span> 
+        <span class="n">messages</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">{</span><span class="s">"role"</span><span class="p">:</span> <span class="s">"system"</span><span class="p">,</span> <span class="s">"content"</span><span class="p">:</span> <span class="s">"You only respond with the answer, no additional dialog"</span><span class="p">},</span>
+            <span class="p">{</span><span class="s">"role"</span><span class="p">:</span> <span class="s">"user"</span><span class="p">,</span> <span class="s">"content"</span><span class="p">:</span> <span class="n">chat_input</span><span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Format and return the response
+</span>    <span class="n">chat_output</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s">'choices'</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s">'message'</span><span class="p">][</span><span class="s">'content'</span><span class="p">]</span>
+    
+    <span class="k">return</span> <span class="n">chat_output</span>
+</code></pre></div></div>
+
+<p>This function takes a user’s request, identifies the appropriate stored prompt, inserts the user’s input, and interacts with the ChatGPT API. The response from the API is then returned to the user.</p>
+
+<h3 id="example-method-call"><a name="Examplemethodcall"></a>Example method call</h3>
+
+<p>To call this lambda function all we need to do is supply it with the name of our Stored Prompt and then we will get the response in a consistent and reliable format:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"functionName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GetTriviaQuestionsCSV"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"input"</span><span class="p">:</span><span class="w"> </span><span class="s2">"4"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>and the response we receive is:</p>
+
+<pre><code class="language-csv">"question","optionA","optionB","optionC","optionD","answer"
+What is the capital of Australia?,"Sydney","Melbourne","Canberra","Brisbane","Canberra"
+What is the world's largest ocean?,"Pacific","Atlantic","Indian","Arctic","Pacific"
+Which planet is known as the Red Planet?,"Jupiter","Mars","Saturn","Venus","Mars"
+What is the smallest country in the world?,"Monaco","Maldives","Vatican City","Nauru","Vatican City"
+</code></pre>
+
+<h3 id="whats-the-point-of-all-this"><a name="Whatsthepointofallthis"></a>Whats the point of all this?</h3>
+
+<p>By structuring our interaction with ChatGPT in this way, we can create a more structured and predictable conversational interface. We can design prompts to guide the AI in the type of responses we want to generate, and users can choose from a set of available prompts to drive their interactions with the AI.</p>
+
+<p>We are now able to write highly complex prompts, but we will know that they will have a defined output. If we wanted to improve and modify the prompt or make it more efficient later it would have no effect on any of the callers. We have abstracted away the AI layer and now allow it to be used in a functional way.</p>
+
+<h3 id="conclusion"><a name="Conclusion"></a>Conclusion</h3>
+
+<p>In this blog post, we’ve taken a deep dive into an exciting way of structuring interactions with the ChatGPT language model. By leveraging AWS Lambda and DynamoDB, we’ve created a system that allows a consistent interaction with the AI, allowing us to embed it in applications where it might not have been considered suitable before.</p>
+
+<p>While this approach comes with its own set of challenges, like the design of effective prompts and the current latency involved with a third party like OpenAI, the potential benefits are immense. We are able to separate the concerns of effective prompt design away from the functional way in which the prompts are used.</p>
+
+<p>When AWS release their own Generative AI infrastructure like Amazon Bedrock and the Amazon Titan models we can make this solution even better, and I will update or write a new blog post when those services are available.</p>
+
+<p>So, what should we build using this… spoiler alert, the next couple of blog posts are going to build on this.</p>]]></content><author><name>Ian Ryan</name></author><category term="AWS" /><category term="ChatGPT" /><category term="AI" /><summary type="html"><![CDATA[Using stored prompts with Lambda and OpenAI ChatGPT]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/images/gen/blog/blog-4.webp" /><media:content medium="image" url="/assets/images/gen/blog/blog-4.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Amazon Connect: Embracing Modular Flows for Enhanced Efficiency and Scalability - Part 2</title><link href="/blog/2023-06-01-amazon-connect-modular-part-2/" rel="alternate" type="text/html" title="Amazon Connect: Embracing Modular Flows for Enhanced Efficiency and Scalability - Part 2" /><published>2023-06-01T12:00:00+12:00</published><updated>2023-06-01T12:00:00+12:00</updated><id>/blog/amazon-connect-modular-part-2</id><content type="html" xml:base="/blog/2023-06-01-amazon-connect-modular-part-2/"><![CDATA[<blockquote>
   <p>This is the second part of a series of blog posts about building a comprehensive Amazon Connect Modular Solution. In this part we are looking at the front end for configuring the solution that we have built in Part 1.</p>
 </blockquote>
 
@@ -289,168 +450,7 @@
 
 <p>In this blog post we have added a front end for operational support to our modular contact center solution. This is allowing the operation users to configure and maintain a contact center in a safe an consistent way.</p>
 
-<p>In the next blog post in this series we will be looking at adding CICD processes to the solution to allow a full software development lifecycle to the modules.</p>]]></content><author><name>Ian Ryan</name></author><category term="AWS" /><category term="Amazon Connect" /><summary type="html"><![CDATA[Amazon Connect: Embracing Modular Flows for Enhanced Efficiency and Scalability]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/images/gen/blog/blog-3.webp" /><media:content medium="image" url="http://localhost:4000/assets/images/gen/blog/blog-3.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Using Stored Prompts with Lambda and OpenAI ChatGPT</title><link href="http://localhost:4000/blog/2023-06-09-stored-prompts-chatgpt/" rel="alternate" type="text/html" title="Using Stored Prompts with Lambda and OpenAI ChatGPT" /><published>2023-05-26T21:28:42+12:00</published><updated>2023-05-26T21:28:42+12:00</updated><id>http://localhost:4000/blog/stored-prompts-chatgpt</id><content type="html" xml:base="http://localhost:4000/blog/2023-06-09-stored-prompts-chatgpt/"><![CDATA[<h2 id="using-stored-prompts-with-lambda-to-interact-with-chatgpt-in-a-functional-way"><a name="UsingStoredPromptswithLambdatointeractwithChatGPTinafunctionalway"></a>Using Stored Prompts with Lambda to interact with ChatGPT in a functional way</h2>
-
-<p>In this blog post, we will explore how to use AWS Lambda functions to interact with ChatGPT, a highly sophisticated conversational AI model developed by OpenAI. Our main task will be to structure predefined prompts stored in an AWS DynamoDB table, which the Lambda function will leverage to call ChatGPT. This design might be akin to using stored procedures in a traditional database environment, except in our case, the stored prompts are natural text-based and used to instigate functional dialogue with the AI.</p>
-
-<p>The stored prompts will be designed to have a particular input and specified output. A user, when performing an action, will need to specify the prompt they want and the input data. The Lambda function then retrieves the appropriate prompt, integrates the input data, interacts with ChatGPT, and finally provides the user with a response.</p>
-
-<p>As there is a new emerging skill, specifically around crafting the best prompts for interacting with a generative AI, using this approach we can define complex stored prompts, and isolate the development of these stored prompts.</p>
-
-<p>Let’s delve deeper into each stage of the process.</p>
-
-<h3 id="aws-lambda-and-dynamodb"><a name="AWSLambdaandDynamoDB"></a>AWS Lambda and DynamoDB</h3>
-
-<p>AWS Lambda is a serverless computing service that lets you run your code without provisioning or managing servers. You only pay for the compute time you consume, and there’s no charge when your code isn’t running. We are using Lambda to retrieve data from DynamoDB and to interact with the OpenAI API.</p>
-
-<p>Amazon DynamoDB is a fully managed NoSQL database service that provides fast and predictable performance. We are using this to store all of our stored prompts.</p>
-
-<h3 id="chatgpt-the-ai-conversation-partner"><a name="ChatGPT:TheAIConversationPartner"></a>ChatGPT: The AI Conversation Partner</h3>
-
-<p>ChatGPT is a language model developed by OpenAI, designed to simulate human-like text conversations. It is based on a transformer architecture, which is particularly effective at understanding the context of a conversation and generating coherent and contextually appropriate responses. The current version as of the time of writing (GPT-4) can generate highly sophisticated and nuanced responses, making it an ideal tool for developing conversational interfaces and AI assistants.</p>
-
-<h3 id="structuring-predefined-prompts"><a name="StructuringPredefinedPrompts"></a>Structuring Predefined Prompts</h3>
-
-<p>In our setup, we want to have a set of predefined prompts that act as a sort of API for interacting with ChatGPT. These prompts will be designed to expect a specific type of input and will have a specified output format.</p>
-
-<p>Consider a prompt like “Translate the following English text into Spanish: {input}.” The input would be any English text string, and the output would be the translated Spanish text.</p>
-
-<p>This is an overly simple example just to get the idea behind what we are doing. Perhaps a better example would be a prompt such as:</p>
-
-<p>“Given the following input {input} provide a sentiment score from 0 to 1 where 0 is unhappy and 1 is very happy. Respond only in JSON format in the style of {“confidence”:””}”</p>
-
-<p>In this way we would let the generative AI decide perform some sentiment analysis for us. Of course the entire point of this is that <em>any</em> prompt can be used, extremely complex prompts could be constructed with any number of instructions for the AI.</p>
-
-<p>These prompts will be stored in a DynamoDB table. Each prompt will have a unique key or function name, allowing the Lambda function to quickly and efficiently retrieve the appropriate prompt based on the user’s input.</p>
-
-<p>Here’s a simple example of what this DynamoDB table might look like:</p>
-
-<table>
-  <thead>
-    <tr>
-      <th>FunctionName</th>
-      <th>Prompt</th>
-      <th>InputType</th>
-      <th>OutputType</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>TranslateEngToEsp</td>
-      <td>“Translate the following English text into Spanish: {input}”</td>
-      <td>Text</td>
-      <td>Text</td>
-    </tr>
-    <tr>
-      <td>Sentiment</td>
-      <td>“Given the following input {input} provide a sentiment score from 0 to 1 where 0 is unhappy and 1 is very happy. Respond only in JSON format in the style of {“confidence”:””}”</td>
-      <td>Text</td>
-      <td>JSON</td>
-    </tr>
-    <tr>
-      <td>GetTriviaQuestionsCSV</td>
-      <td>“Write me {input} multiple choice trivia question in CSV format with the column headings “‘question’,’optionA’,’optionB’,’optionC’,’optionD’,’answer’”. Include the column headings as the first line.”</td>
-      <td>Number</td>
-      <td>CSV</td>
-    </tr>
-    <tr>
-      <td>…</td>
-      <td>…</td>
-      <td>…</td>
-      <td>…</td>
-    </tr>
-  </tbody>
-</table>
-
-<h3 id="setting-up-the-lambda-function"><a name="SettingUptheLambdaFunction"></a>Setting Up the Lambda Function</h3>
-
-<p>Our Lambda function will act as the intermediary between the user and ChatGPT. It will take the user’s chosen prompt and input, retrieve the appropriate stored prompt from the DynamoDB table, and insert the input data into the prompt.</p>
-
-<p>The Lambda function will then send this constructed prompt to the ChatGPT API. It will then take the API’s response, and format it for the user.</p>
-
-<p>The basic structure of the function will look something like this (written in Python):</p>
-
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">openai</span>
-<span class="kn">import</span> <span class="nn">boto3</span>
-<span class="kn">import</span> <span class="nn">os</span>
-
-<span class="n">dynamodb</span> <span class="o">=</span> <span class="n">boto3</span><span class="p">.</span><span class="n">client</span><span class="p">(</span><span class="s">'dynamodb'</span><span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">lambda_handler</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
-    <span class="c1"># Retrieve the prompt key and input from the user's request
-</span>    <span class="n">function_name</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s">'functionName'</span><span class="p">]</span>
-    <span class="n">user_input</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s">'input'</span><span class="p">]</span>
-    
-    <span class="c1"># Retrieve the stored prompt from DynamoDB
-</span>    <span class="n">stored_prompt</span> <span class="o">=</span> <span class="n">dynamodb</span><span class="p">.</span><span class="n">get_item</span><span class="p">(</span>
-        <span class="n">TableName</span><span class="o">=</span><span class="s">'openai_prompt_library'</span><span class="p">,</span>
-        <span class="n">Key</span><span class="o">=</span><span class="p">{</span>
-            <span class="s">'functionName'</span><span class="p">:</span> <span class="p">{</span>
-                <span class="s">'S'</span><span class="p">:</span> <span class="n">function_name</span>
-            <span class="p">}</span>
-        <span class="p">}</span>
-    <span class="p">)[</span><span class="s">'Item'</span><span class="p">][</span><span class="s">'prompt'</span><span class="p">][</span><span class="s">'S'</span><span class="p">]</span>
-    
-    <span class="c1"># Insert the user input into the prompt
-</span>    <span class="k">if</span> <span class="ow">not</span> <span class="n">user_input</span><span class="p">:</span>
-        <span class="n">chat_input</span> <span class="o">=</span> <span class="n">stored_prompt</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">chat_input</span> <span class="o">=</span> <span class="n">stored_prompt</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">user_input</span><span class="p">)</span>
-    
-    <span class="n">openai</span><span class="p">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'openai_api_key'</span><span class="p">)</span>
-    
-    <span class="c1"># Call the ChatGPT API
-</span>    <span class="n">response</span> <span class="o">=</span> <span class="n">openai</span><span class="p">.</span><span class="n">ChatCompletion</span><span class="p">.</span><span class="n">create</span><span class="p">(</span>
-        <span class="n">model</span><span class="o">=</span><span class="s">"gpt-3.5-turbo"</span><span class="p">,</span> 
-        <span class="n">messages</span><span class="o">=</span><span class="p">[</span>
-            <span class="p">{</span><span class="s">"role"</span><span class="p">:</span> <span class="s">"system"</span><span class="p">,</span> <span class="s">"content"</span><span class="p">:</span> <span class="s">"You only respond with the answer, no additional dialog"</span><span class="p">},</span>
-            <span class="p">{</span><span class="s">"role"</span><span class="p">:</span> <span class="s">"user"</span><span class="p">,</span> <span class="s">"content"</span><span class="p">:</span> <span class="n">chat_input</span><span class="p">}</span>
-        <span class="p">]</span>
-    <span class="p">)</span>
-    
-    <span class="c1"># Format and return the response
-</span>    <span class="n">chat_output</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s">'choices'</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s">'message'</span><span class="p">][</span><span class="s">'content'</span><span class="p">]</span>
-    
-    <span class="k">return</span> <span class="n">chat_output</span>
-</code></pre></div></div>
-
-<p>This function takes a user’s request, identifies the appropriate stored prompt, inserts the user’s input, and interacts with the ChatGPT API. The response from the API is then returned to the user.</p>
-
-<h3 id="example-method-call"><a name="Examplemethodcall"></a>Example method call</h3>
-
-<p>To call this lambda function all we need to do is supply it with the name of our Stored Prompt and then we will get the response in a consistent and reliable format:</p>
-
-<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
-  </span><span class="nl">"functionName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GetTriviaQuestionsCSV"</span><span class="p">,</span><span class="w">
-  </span><span class="nl">"input"</span><span class="p">:</span><span class="w"> </span><span class="s2">"4"</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre></div></div>
-
-<p>and the response we receive is:</p>
-
-<pre><code class="language-csv">"question","optionA","optionB","optionC","optionD","answer"
-What is the capital of Australia?,"Sydney","Melbourne","Canberra","Brisbane","Canberra"
-What is the world's largest ocean?,"Pacific","Atlantic","Indian","Arctic","Pacific"
-Which planet is known as the Red Planet?,"Jupiter","Mars","Saturn","Venus","Mars"
-What is the smallest country in the world?,"Monaco","Maldives","Vatican City","Nauru","Vatican City"
-</code></pre>
-
-<h3 id="whats-the-point-of-all-this"><a name="Whatsthepointofallthis"></a>Whats the point of all this?</h3>
-
-<p>By structuring our interaction with ChatGPT in this way, we can create a more structured and predictable conversational interface. We can design prompts to guide the AI in the type of responses we want to generate, and users can choose from a set of available prompts to drive their interactions with the AI.</p>
-
-<p>We are now able to write highly complex prompts, but we will know that they will have a defined output. If we wanted to improve and modify the prompt or make it more efficient later it would have no effect on any of the callers. We have abstracted away the AI layer and now allow it to be used in a functional way.</p>
-
-<h3 id="conclusion"><a name="Conclusion"></a>Conclusion</h3>
-
-<p>In this blog post, we’ve taken a deep dive into an exciting way of structuring interactions with the ChatGPT language model. By leveraging AWS Lambda and DynamoDB, we’ve created a system that allows a consistent interaction with the AI, allowing us to embed it in applications where it might not have been considered suitable before.</p>
-
-<p>While this approach comes with its own set of challenges, like the design of effective prompts and the current latency involved with a third party like OpenAI, the potential benefits are immense. We are able to separate the concerns of effective prompt design away from the functional way in which the prompts are used.</p>
-
-<p>When AWS release their own Generative AI infrastructure like Amazon Bedrock and the Amazon Titan models we can make this solution even better, and I will update or write a new blog post when those services are available.</p>
-
-<p>So, what should we build using this… spoiler alert, the next couple of blog posts are going to build on this.</p>]]></content><author><name>Ian Ryan</name></author><category term="AWS" /><category term="ChatGPT" /><category term="AI" /><summary type="html"><![CDATA[Using stored prompts with Lambda and OpenAI ChatGPT]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/images/gen/blog/blog-4.webp" /><media:content medium="image" url="http://localhost:4000/assets/images/gen/blog/blog-4.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Amazon Connect: Embracing Modular Flows for Enhanced Efficiency and Scalability - Part 1</title><link href="http://localhost:4000/blog/2023-05-23-amazon-connect-modular-part-1/" rel="alternate" type="text/html" title="Amazon Connect: Embracing Modular Flows for Enhanced Efficiency and Scalability - Part 1" /><published>2023-05-23T21:49:03+12:00</published><updated>2023-05-23T21:49:03+12:00</updated><id>http://localhost:4000/blog/amazon-connect-modular-part-1</id><content type="html" xml:base="http://localhost:4000/blog/2023-05-23-amazon-connect-modular-part-1/"><![CDATA[<blockquote>
+<p>In the next blog post in this series we will be looking at adding CICD processes to the solution to allow a full software development lifecycle to the modules.</p>]]></content><author><name>Ian Ryan</name></author><category term="AWS" /><category term="Amazon Connect" /><summary type="html"><![CDATA[Amazon Connect: Embracing Modular Flows for Enhanced Efficiency and Scalability]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/images/gen/blog/blog-3.webp" /><media:content medium="image" url="/assets/images/gen/blog/blog-3.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Amazon Connect: Embracing Modular Flows for Enhanced Efficiency and Scalability - Part 1</title><link href="/blog/2023-05-23-amazon-connect-modular-part-1/" rel="alternate" type="text/html" title="Amazon Connect: Embracing Modular Flows for Enhanced Efficiency and Scalability - Part 1" /><published>2023-05-23T21:49:03+12:00</published><updated>2023-05-23T21:49:03+12:00</updated><id>/blog/amazon-connect-modular-part-1</id><content type="html" xml:base="/blog/2023-05-23-amazon-connect-modular-part-1/"><![CDATA[<blockquote>
   <p>This is the first in a series of posts where I will be looking at building an example of a comprehensive modular Amazon Connect solution. As usual all code is available on github under a MIT license and contributions are welcomed.</p>
 </blockquote>
 
@@ -803,7 +803,7 @@ What is the smallest country in the world?,"Monaco","Maldives","Vatican City","N
 
 <h2 id="conclusion">Conclusion</h2>
 
-<p>In this blog post we introduced the idea and benefits from a business perspective around using modules in an Amazon Connect contact center solution. We have started to build some core foundational components execute the modules that had been configured within Dynamo. However as you will have realized there is more that needs to be done, we need a way build the configuration for these modules, a way to describe the configuration and behavior of different call centers or numbers that are called. We will look at this in the next blog post, where we will define a front end to define and manage the modules. It is at that point that the value to an operations team will become even more apparent.</p>]]></content><author><name>Ian Ryan</name></author><category term="AWS" /><category term="Amazon Connect" /><summary type="html"><![CDATA[Amazon Connect: Embracing Modular Flows for Enhanced Efficiency and Scalability]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/images/gen/blog/blog-2.webp" /><media:content medium="image" url="http://localhost:4000/assets/images/gen/blog/blog-2.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Amazon Connect: Customer control of queue music</title><link href="http://localhost:4000/blog/2023-04-26-queue-music-selection/" rel="alternate" type="text/html" title="Amazon Connect: Customer control of queue music" /><published>2023-03-26T22:28:42+13:00</published><updated>2023-03-26T22:28:42+13:00</updated><id>http://localhost:4000/blog/queue-music-selection</id><content type="html" xml:base="http://localhost:4000/blog/2023-04-26-queue-music-selection/"><![CDATA[<blockquote>
+<p>In this blog post we introduced the idea and benefits from a business perspective around using modules in an Amazon Connect contact center solution. We have started to build some core foundational components execute the modules that had been configured within Dynamo. However as you will have realized there is more that needs to be done, we need a way build the configuration for these modules, a way to describe the configuration and behavior of different call centers or numbers that are called. We will look at this in the next blog post, where we will define a front end to define and manage the modules. It is at that point that the value to an operations team will become even more apparent.</p>]]></content><author><name>Ian Ryan</name></author><category term="AWS" /><category term="Amazon Connect" /><summary type="html"><![CDATA[Amazon Connect: Embracing Modular Flows for Enhanced Efficiency and Scalability]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/images/gen/blog/blog-2.webp" /><media:content medium="image" url="/assets/images/gen/blog/blog-2.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Amazon Connect: Customer control of queue music</title><link href="/blog/2023-04-26-queue-music-selection/" rel="alternate" type="text/html" title="Amazon Connect: Customer control of queue music" /><published>2023-03-26T22:28:42+13:00</published><updated>2023-03-26T22:28:42+13:00</updated><id>/blog/queue-music-selection</id><content type="html" xml:base="/blog/2023-04-26-queue-music-selection/"><![CDATA[<blockquote>
   <p>This is the first in a series of posts where I will be looking into aspects of Amazon Connect, from the customer experience, to the agents experience. Eventually also discussing the day to day operations and dev-ops involved in managing an enterprise level contact centre solution.</p>
 </blockquote>
 
@@ -919,4 +919,4 @@ What is the smallest country in the world?,"Monaco","Maldives","Vatican City","N
 
 <h2 id="source">Source</h2>
 
-<p>As always with these blog posts, the full source of the code is available on my github page.</p>]]></content><author><name>Ian Ryan</name></author><category term="AWS" /><category term="Amazon Connect" /><category term="CX" /><summary type="html"><![CDATA[Allowing users to select their own queue music improves customer experience.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/images/gen/blog/blog-1.webp" /><media:content medium="image" url="http://localhost:4000/assets/images/gen/blog/blog-1.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
+<p>As always with these blog posts, the full source of the code is available on my github page.</p>]]></content><author><name>Ian Ryan</name></author><category term="AWS" /><category term="Amazon Connect" /><category term="CX" /><summary type="html"><![CDATA[Allowing users to select their own queue music improves customer experience.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="/assets/images/gen/blog/blog-1.webp" /><media:content medium="image" url="/assets/images/gen/blog/blog-1.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
