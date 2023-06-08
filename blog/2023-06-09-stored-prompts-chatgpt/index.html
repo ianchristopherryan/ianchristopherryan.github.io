@@ -425,6 +425,34 @@
 
 <p>This function takes a user’s request, identifies the appropriate stored prompt, inserts the user’s input, and interacts with the ChatGPT API. The response from the API is then returned to the user.</p>
 
+<p>To allow us to be able to call the OpenAI ChatGPT API though we will need to add a layer to our lambda. It is possible to create your own layer but for this blog post we will just use a predefined layer. Helpfully there are some people who have already built a layer that we can use, for example <a href="https://github.com/erenyasarkurt/OpenAI-AWS-Lambda-Layer">here</a>, or its also included in my <a href="https://github.com/ianchristopherryan/openai-lambda">github</a> for this blog post. We will be using this python layer for our lambda.</p>
+
+<p>We create a layer in the Lambda console by specifying a name and uploading our layer zip:</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20230609/CreateLayer.png" alt="Create a layer" />
+  <!--</a>-->
+  <figcaption>
+    <h4></h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>After creating the layer we can add it to our lambda function:</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20230609/AddLayer.png" alt="Add a layer" />
+  <!--</a>-->
+  <figcaption>
+    <h4></h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>This will allow the lambda function above to make the API call to ChatGPT.</p>
+
 <h3 id="example-method-call"><a name="Examplemethodcall"></a>Example method call</h3>
 
 <p>To call this lambda function all we need to do is supply it with the name of our Stored Prompt and then we will get the response in a consistent and reliable format:</p>
