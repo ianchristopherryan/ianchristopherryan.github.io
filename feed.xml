@@ -1,0 +1,922 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="http://localhost:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/" rel="alternate" type="text/html" /><updated>2023-06-08T12:49:03+12:00</updated><id>http://localhost:4000/feed.xml</id><title type="html">Ian Ryan</title><entry><title type="html">Amazon Connect: Embracing Modular Flows for Enhanced Efficiency and Scalability - Part 2</title><link href="http://localhost:4000/blog/2023-06-01-amazon-connect-modular-part-2/" rel="alternate" type="text/html" title="Amazon Connect: Embracing Modular Flows for Enhanced Efficiency and Scalability - Part 2" /><published>2023-06-01T12:00:00+12:00</published><updated>2023-06-01T12:00:00+12:00</updated><id>http://localhost:4000/blog/amazon-connect-modular-part-2</id><content type="html" xml:base="http://localhost:4000/blog/2023-06-01-amazon-connect-modular-part-2/"><![CDATA[<blockquote>
+  <p>This is the second part of a series of blog posts about building a comprehensive Amazon Connect Modular Solution. In this part we are looking at the front end for configuring the solution that we have built in Part 1.</p>
+</blockquote>
+
+<h1 id="demo-video">Demo video</h1>
+
+<p><a href="https://youtu.be/AZ6dh_90aO0" target="_blank">Click here for a demo of this modular solution on my channel on YouTube</a></p>
+
+<h1 id="solution-design">Solution Design</h1>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20230601/module_architecture.png" alt="High level architecture" />
+  <!--</a>-->
+  <figcaption>
+    <h4>High level architecture</h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>For this part of the solution we are going to be looking at the front end configuration. We want to provide a way for operations teams to manage the call center and to make changes as required. An operations team should be empowered to make the changes they require but also to have some guard rails to ensure that the changes they make have an acceptable level of risk.</p>
+
+<p>The modular approach to call centers lends it self to this, as there are only a limited number of settings exposed by each module there is inherently a limited scope of change that can be applied. The functionality of the module will not be affected only the configuration of that module.</p>
+
+<p>With this in mind, we now need to look at how the configuration of the modules is specified, and which settings are going to be available.</p>
+
+<h3 id="module-configuration">Module configuration</h3>
+
+<p>Modules need a consistent way to be configured. In the last blog post we looked at how the settings/configuration would be stored in Dynamo and how it would be provided to the module for execution. However we need to have some more information about the settings that a module will use. As we will be building a front end to configure these modules, we must list and describe all of the settings available with their names, descriptions, acceptable values etc. We will do this using some module meta data that we will associate with a connect module.</p>
+
+<h4 id="module-meta-data">Module Meta Data</h4>
+<p>Modules need to have some associated meta data, a description of the inputs and outputs that the module uses. We are going to store this metadata as JSON such as:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+ </span><span class="nl">"moduleId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"e8e2efa6-dc0f-4a5c-8ad2-8f37b687d7b1"</span><span class="p">,</span><span class="w">
+ </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"PlayPrompt"</span><span class="p">,</span><span class="w">
+ </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Plays a prompt"</span><span class="p">,</span><span class="w">
+ </span><span class="nl">"settings"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+   </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"This is the text that will be played"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"PromptValue"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"required"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"text"</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+   </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"The type of the prompt to be played"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"PromptType"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"options"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+    </span><span class="s2">"text"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"ssml"</span><span class="w">
+   </span><span class="p">],</span><span class="w">
+   </span><span class="nl">"required"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"select"</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+ </span><span class="p">],</span><span class="w">
+ </span><span class="nl">"defaultSettings"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+  </span><span class="nl">"PromptType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"text"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"PromptValue"</span><span class="p">:</span><span class="w"> </span><span class="s2">"This is a prompt that will be played."</span><span class="w">
+ </span><span class="p">},</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>With this JSON we are able to describe:</p>
+<ul>
+  <li>The name of the module and a description of the functionality of the module.</li>
+  <li>The settings that are available for the module. These are any of the inputs required for the configuration of the module. In our initial implementation we will allow simple plain text values or lists of defined values.</li>
+  <li>Default settings for some or all of the settings</li>
+  <li>If the settings is required we can flag it here, otherwise its assumed that the module will run with a default for this setting</li>
+  <li>All of the settings also have optional descriptions, although the name should be descriptive enough this can help guide an operations user to the correct type of setting they should be providing</li>
+</ul>
+
+<p>This module meta data will be closely associated with the modules, in a later post we will be looking at how this can be autogenerated and shared, for now though we will just store this in Dynamo.</p>
+
+<p>Now we have a way to  describe the settings we want to provide to the modules in connect, we can now look at building a front end to modify and create the settings, starting with an API gateway to give an interface to our modular solution.</p>
+
+<h3 id="api-gateway">API Gateway</h3>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20230601/api_gateway.png" alt="" />
+  <!--</a>-->
+  <figcaption>
+    <h4></h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>For our solution we need to create a API gateway with a couple of different routes. We want to be able to retrieve the metadata we have created for the modules and we want to be able to write the configuration settings to Dynamo also.</p>
+
+<p>We can handle both of these cases with a single simple lambda, and set this integration in the API gateway. The lambda function will handle both the routes as for the module route it is only allowing a GET, whereas the configuration routes allow for CRUD operations. This could easily be separate lambda functions, but for simplicity sake its composed here in just one:</p>
+
+<h4 id="modular_connect_configuration">modular_connect_configuration</h4>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">DynamoDBClient</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">@aws-sdk/client-dynamodb</span><span class="dl">"</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span>
+  <span class="nx">DynamoDBDocumentClient</span><span class="p">,</span>
+  <span class="nx">ScanCommand</span><span class="p">,</span>
+  <span class="nx">PutCommand</span><span class="p">,</span>
+  <span class="nx">GetCommand</span><span class="p">,</span>
+  <span class="nx">DeleteCommand</span><span class="p">,</span>
+<span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">@aws-sdk/lib-dynamodb</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="kd">const</span> <span class="nx">client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">DynamoDBClient</span><span class="p">({});</span>
+
+<span class="kd">const</span> <span class="nx">dynamo</span> <span class="o">=</span> <span class="nx">DynamoDBDocumentClient</span><span class="p">.</span><span class="k">from</span><span class="p">(</span><span class="nx">client</span><span class="p">);</span>
+
+<span class="kd">const</span> <span class="nx">configurationsTableName</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">modular_connect_configurations</span><span class="dl">"</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">moduleDescriptorTableName</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">modular_connect_modules</span><span class="dl">"</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">handler</span> <span class="o">=</span> <span class="k">async</span> <span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">context</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="dl">"</span><span class="s2">EVENT</span><span class="se">\n</span><span class="dl">"</span> <span class="o">+</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
+  
+  <span class="kd">let</span> <span class="nx">body</span><span class="p">;</span>
+  <span class="kd">let</span> <span class="nx">statusCode</span> <span class="o">=</span> <span class="mi">200</span><span class="p">;</span>
+  <span class="kd">const</span> <span class="nx">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="dl">"</span><span class="s2">Content-Type</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">application/json</span><span class="dl">"</span><span class="p">,</span>
+  <span class="p">};</span>
+
+  <span class="k">try</span> <span class="p">{</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">routeKey</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">case</span> <span class="dl">"</span><span class="s2">GET /modules</span><span class="dl">"</span><span class="p">:</span>
+        <span class="nx">body</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">dynamo</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span>
+          <span class="k">new</span> <span class="nx">ScanCommand</span><span class="p">({</span> <span class="na">TableName</span><span class="p">:</span> <span class="nx">moduleDescriptorTableName</span> <span class="p">})</span>
+        <span class="p">);</span>
+        <span class="nx">body</span> <span class="o">=</span> <span class="nx">body</span><span class="p">.</span><span class="nx">Items</span><span class="p">;</span>
+        <span class="k">break</span><span class="p">;</span>
+      <span class="k">case</span> <span class="dl">"</span><span class="s2">DELETE /configurations/{id}</span><span class="dl">"</span><span class="p">:</span>
+        <span class="k">await</span> <span class="nx">dynamo</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span>
+          <span class="k">new</span> <span class="nx">DeleteCommand</span><span class="p">({</span>
+            <span class="na">TableName</span><span class="p">:</span> <span class="nx">configurationsTableName</span><span class="p">,</span>
+            <span class="na">Key</span><span class="p">:</span> <span class="p">{</span>
+              <span class="na">id</span><span class="p">:</span> <span class="nx">event</span><span class="p">.</span><span class="nx">pathParameters</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
+            <span class="p">},</span>
+          <span class="p">})</span>
+        <span class="p">);</span>
+        <span class="nx">body</span> <span class="o">=</span> <span class="s2">`Deleted item </span><span class="p">${</span><span class="nx">event</span><span class="p">.</span><span class="nx">pathParameters</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span><span class="s2">`</span><span class="p">;</span>
+        <span class="k">break</span><span class="p">;</span>
+      <span class="k">case</span> <span class="dl">"</span><span class="s2">GET /configurations/{id}</span><span class="dl">"</span><span class="p">:</span>
+        <span class="nx">body</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">dynamo</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span>
+          <span class="k">new</span> <span class="nx">GetCommand</span><span class="p">({</span>
+            <span class="na">TableName</span><span class="p">:</span> <span class="nx">configurationsTableName</span><span class="p">,</span>
+            <span class="na">Key</span><span class="p">:</span> <span class="p">{</span>
+              <span class="na">id</span><span class="p">:</span> <span class="nx">event</span><span class="p">.</span><span class="nx">pathParameters</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
+            <span class="p">},</span>
+          <span class="p">})</span>
+        <span class="p">);</span>
+        <span class="nx">body</span> <span class="o">=</span> <span class="nx">body</span><span class="p">.</span><span class="nx">Item</span><span class="p">;</span>
+        <span class="k">break</span><span class="p">;</span>
+      <span class="k">case</span> <span class="dl">"</span><span class="s2">GET /configurations</span><span class="dl">"</span><span class="p">:</span>
+        <span class="nx">body</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">dynamo</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span>
+          <span class="k">new</span> <span class="nx">ScanCommand</span><span class="p">({</span> <span class="na">TableName</span><span class="p">:</span> <span class="nx">configurationsTableName</span> <span class="p">})</span>
+        <span class="p">);</span>
+        <span class="nx">body</span> <span class="o">=</span> <span class="nx">body</span><span class="p">.</span><span class="nx">Items</span><span class="p">;</span>
+        <span class="k">break</span><span class="p">;</span>
+      <span class="k">case</span> <span class="dl">"</span><span class="s2">POST /configurations</span><span class="dl">"</span><span class="p">:</span>
+        <span class="kd">let</span> <span class="nx">requestJSON</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">body</span><span class="p">);</span>
+        <span class="k">await</span> <span class="nx">dynamo</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span>
+          <span class="k">new</span> <span class="nx">PutCommand</span><span class="p">({</span>
+            <span class="na">TableName</span><span class="p">:</span> <span class="nx">configurationsTableName</span><span class="p">,</span>
+            <span class="na">Item</span><span class="p">:</span> <span class="p">{</span>
+              <span class="na">id</span><span class="p">:</span> <span class="nx">requestJSON</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
+              <span class="na">phoneNumber</span><span class="p">:</span> <span class="nx">requestJSON</span><span class="p">.</span><span class="nx">phoneNumber</span><span class="p">,</span>
+              <span class="na">modules</span><span class="p">:</span> <span class="nx">requestJSON</span><span class="p">.</span><span class="nx">modules</span><span class="p">,</span>
+              <span class="na">name</span><span class="p">:</span> <span class="nx">requestJSON</span><span class="p">.</span><span class="nx">name</span><span class="p">,</span>
+            <span class="p">},</span>
+          <span class="p">})</span>
+        <span class="p">);</span>
+        <span class="nx">body</span> <span class="o">=</span> <span class="s2">`Put item </span><span class="p">${</span><span class="nx">requestJSON</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span><span class="s2">`</span><span class="p">;</span>
+        <span class="k">break</span><span class="p">;</span>
+      <span class="nl">default</span><span class="p">:</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">`Unsupported route: "</span><span class="p">${</span><span class="nx">event</span><span class="p">.</span><span class="nx">routeKey</span><span class="p">}</span><span class="s2">"`</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">statusCode</span> <span class="o">=</span> <span class="mi">400</span><span class="p">;</span>
+    <span class="nx">body</span> <span class="o">=</span> <span class="nx">err</span><span class="p">.</span><span class="nx">message</span><span class="p">;</span>
+  <span class="p">}</span> <span class="k">finally</span> <span class="p">{</span>
+    <span class="nx">body</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">body</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="p">{</span>
+    <span class="nx">statusCode</span><span class="p">,</span>
+    <span class="nx">body</span><span class="p">,</span>
+    <span class="nx">headers</span><span class="p">,</span>
+  <span class="p">};</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>So now that we have a functioning API backend that will allow us to set the different settings for our modular solution, we can now look at building a front end.</p>
+
+<h2 id="module-front-end">Module Front End</h2>
+
+<p>The module front end will be used by operations team members to create and administer the functional core of the call center. It allows a user to create and configure call center solutions using any available modules. There are several core pieces of functionality we want to provide with this front end:</p>
+
+<ul>
+  <li>Creating new call center solutions associated with a number in Connect</li>
+  <li>Composing the call center by adding modules to the call center</li>
+  <li>Configuration of the modules, allowing the customization within the defined limits of the module</li>
+  <li>Adding conditional statements to define if a module will be executed at all</li>
+  <li>Insertion, removal, and reordering of all modules as required</li>
+</ul>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20230601/modular_connect_admin.png" alt="" />
+  <!--</a>-->
+  <figcaption>
+    <h4></h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>We can create a simple single page application. In this case it is written in React can provides a simple interface to the settings and modules. We display a list of modules that are associated with a given phone number in Connect. These are the modules that will be executed in order whenever a call is placed to Connect.</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20230601/modular_connect_admin_new_config.png" alt="" />
+  <!--</a>-->
+  <figcaption>
+    <h4></h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>Creation of a new configuration links a phone number to a configuration name.</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20230601/modular_connect_admin_select_config.png" alt="" />
+  <!--</a>-->
+  <figcaption>
+    <h4></h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>These different configurations can be retrieved and administered separately. This allows fot the cases where a business may have multiple different call centers, but they all are using the same set of modules.</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20230601/modular_connect_admin_add_module.png" alt="" />
+  <!--</a>-->
+  <figcaption>
+    <h4></h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>Available modules can be added to the configuration by selecting them from the list. This list is being populated by the API call to our modules metadata that we have stored in Dynamo.</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20230601/modular_connect_admin_ordering.gif" alt="" />
+  <!--</a>-->
+  <figcaption>
+    <h4></h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>When modules are added they can be reordered and inserted at any point. This is useful when a new module needs be added into an existing flow. For example if there was a requirement to add a banner message at the start of the customer experience.</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20230601/modular_connect_admin_play_prompt.png" alt="" />
+  <!--</a>-->
+  <figcaption>
+    <h4></h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>All of the available settings for the modules is dynamically generated from the metadata service. This allows us to display the configuration for any module that has been defined by its metadata. When a new module has been added to Dynamo it will automatically be available for configuration in our front end. This will be important later when we start adding CICD processes to module creation.</p>
+
+<p>In this case we can see the settings for the play prompt module, this is the same example that we discussed earlier and showed the metadata JSON. However we can also have more complex modules with more settings such as a DTM menu.</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20230601/modular_connect_admin_dtmf_menu.png" alt="" />
+  <!--</a>-->
+  <figcaption>
+    <h4></h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>In this case there are a lot more settings available as this module will allow the creation of a full DTMF menu. We start to now see some of the efficiency of using modules, as when we are creating this menu there is no need to specify how timeouts, retries, no inputs, etc all work because it is all handled by the module. The module will have defined a standard and consistent way for those functions to operate, all that is required is the customization settings for the module, in this case the menu prompt and the behavior when an option is selected.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this blog post we have added a front end for operational support to our modular contact center solution. This is allowing the operation users to configure and maintain a contact center in a safe an consistent way.</p>
+
+<p>In the next blog post in this series we will be looking at adding CICD processes to the solution to allow a full software development lifecycle to the modules.</p>]]></content><author><name>Ian Ryan</name></author><category term="AWS" /><category term="Amazon Connect" /><summary type="html"><![CDATA[Amazon Connect: Embracing Modular Flows for Enhanced Efficiency and Scalability]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/images/gen/blog/blog-3.webp" /><media:content medium="image" url="http://localhost:4000/assets/images/gen/blog/blog-3.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Using Stored Prompts with Lambda and OpenAI ChatGPT</title><link href="http://localhost:4000/blog/2023-06-09-stored-prompts-chatgpt/" rel="alternate" type="text/html" title="Using Stored Prompts with Lambda and OpenAI ChatGPT" /><published>2023-05-26T21:28:42+12:00</published><updated>2023-05-26T21:28:42+12:00</updated><id>http://localhost:4000/blog/stored-prompts-chatgpt</id><content type="html" xml:base="http://localhost:4000/blog/2023-06-09-stored-prompts-chatgpt/"><![CDATA[<h2 id="using-stored-prompts-with-lambda-to-interact-with-chatgpt-in-a-functional-way"><a name="UsingStoredPromptswithLambdatointeractwithChatGPTinafunctionalway"></a>Using Stored Prompts with Lambda to interact with ChatGPT in a functional way</h2>
+
+<p>In this blog post, we will explore how to use AWS Lambda functions to interact with ChatGPT, a highly sophisticated conversational AI model developed by OpenAI. Our main task will be to structure predefined prompts stored in an AWS DynamoDB table, which the Lambda function will leverage to call ChatGPT. This design might be akin to using stored procedures in a traditional database environment, except in our case, the stored prompts are natural text-based and used to instigate functional dialogue with the AI.</p>
+
+<p>The stored prompts will be designed to have a particular input and specified output. A user, when performing an action, will need to specify the prompt they want and the input data. The Lambda function then retrieves the appropriate prompt, integrates the input data, interacts with ChatGPT, and finally provides the user with a response.</p>
+
+<p>As there is a new emerging skill, specifically around crafting the best prompts for interacting with a generative AI, using this approach we can define complex stored prompts, and isolate the development of these stored prompts.</p>
+
+<p>Let’s delve deeper into each stage of the process.</p>
+
+<h3 id="aws-lambda-and-dynamodb"><a name="AWSLambdaandDynamoDB"></a>AWS Lambda and DynamoDB</h3>
+
+<p>AWS Lambda is a serverless computing service that lets you run your code without provisioning or managing servers. You only pay for the compute time you consume, and there’s no charge when your code isn’t running. We are using Lambda to retrieve data from DynamoDB and to interact with the OpenAI API.</p>
+
+<p>Amazon DynamoDB is a fully managed NoSQL database service that provides fast and predictable performance. We are using this to store all of our stored prompts.</p>
+
+<h3 id="chatgpt-the-ai-conversation-partner"><a name="ChatGPT:TheAIConversationPartner"></a>ChatGPT: The AI Conversation Partner</h3>
+
+<p>ChatGPT is a language model developed by OpenAI, designed to simulate human-like text conversations. It is based on a transformer architecture, which is particularly effective at understanding the context of a conversation and generating coherent and contextually appropriate responses. The current version as of the time of writing (GPT-4) can generate highly sophisticated and nuanced responses, making it an ideal tool for developing conversational interfaces and AI assistants.</p>
+
+<h3 id="structuring-predefined-prompts"><a name="StructuringPredefinedPrompts"></a>Structuring Predefined Prompts</h3>
+
+<p>In our setup, we want to have a set of predefined prompts that act as a sort of API for interacting with ChatGPT. These prompts will be designed to expect a specific type of input and will have a specified output format.</p>
+
+<p>Consider a prompt like “Translate the following English text into Spanish: {input}.” The input would be any English text string, and the output would be the translated Spanish text.</p>
+
+<p>This is an overly simple example just to get the idea behind what we are doing. Perhaps a better example would be a prompt such as:</p>
+
+<p>“Given the following input {input} provide a sentiment score from 0 to 1 where 0 is unhappy and 1 is very happy. Respond only in JSON format in the style of {“confidence”:””}”</p>
+
+<p>In this way we would let the generative AI decide perform some sentiment analysis for us. Of course the entire point of this is that <em>any</em> prompt can be used, extremely complex prompts could be constructed with any number of instructions for the AI.</p>
+
+<p>These prompts will be stored in a DynamoDB table. Each prompt will have a unique key or function name, allowing the Lambda function to quickly and efficiently retrieve the appropriate prompt based on the user’s input.</p>
+
+<p>Here’s a simple example of what this DynamoDB table might look like:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>FunctionName</th>
+      <th>Prompt</th>
+      <th>InputType</th>
+      <th>OutputType</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>TranslateEngToEsp</td>
+      <td>“Translate the following English text into Spanish: {input}”</td>
+      <td>Text</td>
+      <td>Text</td>
+    </tr>
+    <tr>
+      <td>Sentiment</td>
+      <td>“Given the following input {input} provide a sentiment score from 0 to 1 where 0 is unhappy and 1 is very happy. Respond only in JSON format in the style of {“confidence”:””}”</td>
+      <td>Text</td>
+      <td>JSON</td>
+    </tr>
+    <tr>
+      <td>GetTriviaQuestionsCSV</td>
+      <td>“Write me {input} multiple choice trivia question in CSV format with the column headings “‘question’,’optionA’,’optionB’,’optionC’,’optionD’,’answer’”. Include the column headings as the first line.”</td>
+      <td>Number</td>
+      <td>CSV</td>
+    </tr>
+    <tr>
+      <td>…</td>
+      <td>…</td>
+      <td>…</td>
+      <td>…</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="setting-up-the-lambda-function"><a name="SettingUptheLambdaFunction"></a>Setting Up the Lambda Function</h3>
+
+<p>Our Lambda function will act as the intermediary between the user and ChatGPT. It will take the user’s chosen prompt and input, retrieve the appropriate stored prompt from the DynamoDB table, and insert the input data into the prompt.</p>
+
+<p>The Lambda function will then send this constructed prompt to the ChatGPT API. It will then take the API’s response, and format it for the user.</p>
+
+<p>The basic structure of the function will look something like this (written in Python):</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">openai</span>
+<span class="kn">import</span> <span class="nn">boto3</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">dynamodb</span> <span class="o">=</span> <span class="n">boto3</span><span class="p">.</span><span class="n">client</span><span class="p">(</span><span class="s">'dynamodb'</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">lambda_handler</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+    <span class="c1"># Retrieve the prompt key and input from the user's request
+</span>    <span class="n">function_name</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s">'functionName'</span><span class="p">]</span>
+    <span class="n">user_input</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s">'input'</span><span class="p">]</span>
+    
+    <span class="c1"># Retrieve the stored prompt from DynamoDB
+</span>    <span class="n">stored_prompt</span> <span class="o">=</span> <span class="n">dynamodb</span><span class="p">.</span><span class="n">get_item</span><span class="p">(</span>
+        <span class="n">TableName</span><span class="o">=</span><span class="s">'openai_prompt_library'</span><span class="p">,</span>
+        <span class="n">Key</span><span class="o">=</span><span class="p">{</span>
+            <span class="s">'functionName'</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s">'S'</span><span class="p">:</span> <span class="n">function_name</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">)[</span><span class="s">'Item'</span><span class="p">][</span><span class="s">'prompt'</span><span class="p">][</span><span class="s">'S'</span><span class="p">]</span>
+    
+    <span class="c1"># Insert the user input into the prompt
+</span>    <span class="k">if</span> <span class="ow">not</span> <span class="n">user_input</span><span class="p">:</span>
+        <span class="n">chat_input</span> <span class="o">=</span> <span class="n">stored_prompt</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">chat_input</span> <span class="o">=</span> <span class="n">stored_prompt</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">user_input</span><span class="p">)</span>
+    
+    <span class="n">openai</span><span class="p">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">environ</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'openai_api_key'</span><span class="p">)</span>
+    
+    <span class="c1"># Call the ChatGPT API
+</span>    <span class="n">response</span> <span class="o">=</span> <span class="n">openai</span><span class="p">.</span><span class="n">ChatCompletion</span><span class="p">.</span><span class="n">create</span><span class="p">(</span>
+        <span class="n">model</span><span class="o">=</span><span class="s">"gpt-3.5-turbo"</span><span class="p">,</span> 
+        <span class="n">messages</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">{</span><span class="s">"role"</span><span class="p">:</span> <span class="s">"system"</span><span class="p">,</span> <span class="s">"content"</span><span class="p">:</span> <span class="s">"You only respond with the answer, no additional dialog"</span><span class="p">},</span>
+            <span class="p">{</span><span class="s">"role"</span><span class="p">:</span> <span class="s">"user"</span><span class="p">,</span> <span class="s">"content"</span><span class="p">:</span> <span class="n">chat_input</span><span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+    
+    <span class="c1"># Format and return the response
+</span>    <span class="n">chat_output</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s">'choices'</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s">'message'</span><span class="p">][</span><span class="s">'content'</span><span class="p">]</span>
+    
+    <span class="k">return</span> <span class="n">chat_output</span>
+</code></pre></div></div>
+
+<p>This function takes a user’s request, identifies the appropriate stored prompt, inserts the user’s input, and interacts with the ChatGPT API. The response from the API is then returned to the user.</p>
+
+<h3 id="example-method-call"><a name="Examplemethodcall"></a>Example method call</h3>
+
+<p>To call this lambda function all we need to do is supply it with the name of our Stored Prompt and then we will get the response in a consistent and reliable format:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"functionName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"GetTriviaQuestionsCSV"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"input"</span><span class="p">:</span><span class="w"> </span><span class="s2">"4"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>and the response we receive is:</p>
+
+<pre><code class="language-csv">"question","optionA","optionB","optionC","optionD","answer"
+What is the capital of Australia?,"Sydney","Melbourne","Canberra","Brisbane","Canberra"
+What is the world's largest ocean?,"Pacific","Atlantic","Indian","Arctic","Pacific"
+Which planet is known as the Red Planet?,"Jupiter","Mars","Saturn","Venus","Mars"
+What is the smallest country in the world?,"Monaco","Maldives","Vatican City","Nauru","Vatican City"
+</code></pre>
+
+<h3 id="whats-the-point-of-all-this"><a name="Whatsthepointofallthis"></a>Whats the point of all this?</h3>
+
+<p>By structuring our interaction with ChatGPT in this way, we can create a more structured and predictable conversational interface. We can design prompts to guide the AI in the type of responses we want to generate, and users can choose from a set of available prompts to drive their interactions with the AI.</p>
+
+<p>We are now able to write highly complex prompts, but we will know that they will have a defined output. If we wanted to improve and modify the prompt or make it more efficient later it would have no effect on any of the callers. We have abstracted away the AI layer and now allow it to be used in a functional way.</p>
+
+<h3 id="conclusion"><a name="Conclusion"></a>Conclusion</h3>
+
+<p>In this blog post, we’ve taken a deep dive into an exciting way of structuring interactions with the ChatGPT language model. By leveraging AWS Lambda and DynamoDB, we’ve created a system that allows a consistent interaction with the AI, allowing us to embed it in applications where it might not have been considered suitable before.</p>
+
+<p>While this approach comes with its own set of challenges, like the design of effective prompts and the current latency involved with a third party like OpenAI, the potential benefits are immense. We are able to separate the concerns of effective prompt design away from the functional way in which the prompts are used.</p>
+
+<p>When AWS release their own Generative AI infrastructure like Amazon Bedrock and the Amazon Titan models we can make this solution even better, and I will update or write a new blog post when those services are available.</p>
+
+<p>So, what should we build using this… spoiler alert, the next couple of blog posts are going to build on this.</p>]]></content><author><name>Ian Ryan</name></author><category term="AWS" /><category term="ChatGPT" /><category term="AI" /><summary type="html"><![CDATA[Using stored prompts with Lambda and OpenAI ChatGPT]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/images/gen/blog/blog-4.webp" /><media:content medium="image" url="http://localhost:4000/assets/images/gen/blog/blog-4.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Amazon Connect: Embracing Modular Flows for Enhanced Efficiency and Scalability - Part 1</title><link href="http://localhost:4000/blog/2023-05-23-amazon-connect-modular-part-1/" rel="alternate" type="text/html" title="Amazon Connect: Embracing Modular Flows for Enhanced Efficiency and Scalability - Part 1" /><published>2023-05-23T21:49:03+12:00</published><updated>2023-05-23T21:49:03+12:00</updated><id>http://localhost:4000/blog/amazon-connect-modular-part-1</id><content type="html" xml:base="http://localhost:4000/blog/2023-05-23-amazon-connect-modular-part-1/"><![CDATA[<blockquote>
+  <p>This is the first in a series of posts where I will be looking at building an example of a comprehensive modular Amazon Connect solution. As usual all code is available on github under a MIT license and contributions are welcomed.</p>
+</blockquote>
+
+<h1 id="demo-video">Demo video</h1>
+
+<p><a href="https://youtu.be/AZ6dh_90aO0" target="_blank">Click here for a demo of this modular solution on my channel on YouTube</a></p>
+
+<h1 id="introduction">Introduction</h1>
+
+<p>Contact centers serve as vital hubs for customer interactions, making it essential for organizations to streamline their operations, maximize efficiency, and deliver exceptional customer experiences. Amazon Connect, a cloud-based contact center service, has revolutionized the industry with its scalability and flexibility. Traditionally, contact center flows were hard-coded, limiting customization and hindering development speed. However, the emergence of modular flows has transformed the landscape, enabling contact centers to leverage modules as reusable building blocks. In this extensive series of blog posts, we will explore the myriad benefits of adopting a modular Amazon Connect solution, emphasizing their superiority for large contact centers with multiple business units and/or consultancies catering to diverse clients. We will delve into the advantages of faster development, composability, API development for modules, module sharing, and improved Continuous Integration and Continuous Deployment (CICD) practices.</p>
+
+<h3 id="modular-flows-for-consultancies-and-large-contact-centers">Modular Flows for Consultancies and Large Contact Centers</h3>
+
+<p>Consultancies specializing in contact center solutions often cater to diverse clients with unique requirements, and similarly large contact center operating across multiple business units will also face these unique challenges when it comes to managing customer interactions effectively. The adoption of modular flows within Amazon Connect provides significant advantages for these organizations.</p>
+
+<ul>
+  <li>
+    <p>Reusability and Consistency: Modular flows promote the reuse of common components across different clients. By developing reusable modules for standard call handling processes, contact centers can ensure consistency in customer interactions. This reduces maintenance efforts, guarantees a unified customer experience, and streamlines updates across the organization.</p>
+  </li>
+  <li>
+    <p>Customizability: Modules can allow the customization within defined limits of the experience. Each module can be configured to meet specific client needs, resulting in contact center solutions that align with individual business processes and industry requirements. By leveraging modular flows, consultancies or large contact centers can deliver bespoke solutions without reinventing the wheel for each solution.</p>
+  </li>
+  <li>
+    <p>Time and Cost Savings: Building contact center solutions from scratch for each client is time-consuming and resource-intensive. Modular flows expedite development cycles by allowing consultancies to reuse existing modules and customize them as needed. This approach significantly reduces development effort, lowers costs, and enables consultancies to deliver solutions more efficiently.</p>
+  </li>
+  <li>
+    <p>Scalable and Future-Proof Solutions: Consultancies need to provide solutions that can scale with their clients’ evolving needs. Modular flows offer the flexibility to add or modify modules independently, ensuring solutions remain scalable and adaptable. By developing modular solutions, consultancies future-proof their offerings, enabling clients to stay ahead in a dynamic business landscape.</p>
+  </li>
+</ul>
+
+<h3 id="faster-development-with-modular-flows">Faster Development with Modular Flows</h3>
+
+<p>In today’s competitive environment, speed-to-market is critical for software development projects. Modular flows offer a range of benefits that accelerate development cycles:</p>
+
+<ul>
+  <li>
+    <p>Loose Coupling: Modular flows are designed to be loosely coupled, enabling independent development of individual modules. This allows multiple teams to work simultaneously on different modules, reducing development time and enabling parallel progress. Loosely coupled modules also facilitate easier debugging and maintenance, as changes made to one module have minimal impact on others.</p>
+  </li>
+  <li>
+    <p>Code Reusability: Instead of reinventing common functionalities that will be covered by a standard suite of modules, developers can focus on building any unique and specialized modules that are required by the clients. This not only speeds up project delivery times but also ensures consistency, reduces errors, and enhances the overall quality of the solution.</p>
+  </li>
+  <li>
+    <p>Simplified Testing and Maintenance: Modular flows facilitate granular testing, as each module can be tested independently. This approach enables focused quality assurance efforts, reducing overall testing time and allowing for faster identification and resolution of issues. Furthermore, maintenance becomes more straightforward as individual modules can be modified without disrupting the entire system.</p>
+  </li>
+</ul>
+
+<h3 id="composability-and-api-for-modular-flows">Composability and API for Modular Flows</h3>
+
+<p>Modular flows introduce the concept of composability, allowing modules to be combined and reused as building blocks to create different contact center solutions. This brings several advantages:</p>
+
+<ul>
+  <li>
+    <p>Flexible Solution Design: With modular flows, organizations can compose unique contact center solutions by combining different modules to meet specific requirements. By treating modules as interchangeable components, businesses can tailor their solutions to address diverse customer needs and adapt to evolving market trends.</p>
+  </li>
+  <li>
+    <p>Defining Inputs and Outputs: To ensure interoperability between modules, an API can be developed. Each module follows a defined naming convention for its inputs and outputs, facilitating seamless integration with other modules. This standardized approach enables smooth communication and data exchange between modules, enabling the creation of complex contact center solutions.</p>
+  </li>
+  <li>
+    <p>Community Collaboration: Modular flows enable collaboration within a community of developers, allowing for the sharing and contribution of modules. Third parties can develop modules that address specific functionalities, industry verticals, or unique use cases. This collaborative ecosystem fosters innovation, expands the range of available modules, and enriches the overall Amazon Connect ecosystem.</p>
+  </li>
+</ul>
+
+<h3 id="no-lock-in-and-independence">No Lock-In and Independence</h3>
+
+<p>Modular flows built within Amazon Connect leverage standard Amazon Connect flows, eliminating any external dependencies. This ensures that organizations are not locked into bespoke custom solutions and can leverage the full capabilities of Amazon Connect. The absence of lock-in offers businesses the freedom to explore alternative solutions without sacrificing their investments or being restricted to a specific management solution.</p>
+
+<h3 id="cicd-implementation-with-modular-flows">CICD Implementation with Modular Flows</h3>
+
+<p>Continuous Integration and Continuous Deployment (CICD) practices are essential for ensuring the efficient delivery of software solutions. Modular flows align perfectly with CICD principles and enable organizations to streamline their deployment processes:</p>
+
+<ul>
+  <li>
+    <p>Independent Module Testing: Modular flows facilitate individual module testing as each module can be developed and tested independently. This granularity allows for more focused and efficient testing efforts, reducing the overall testing time and enabling quicker feedback loops.</p>
+  </li>
+  <li>
+    <p>Separate Deployment of Modules: Modular flows support the deployment of individual modules as part of the CICD process. Each module can be deployed separately, minimizing disruption to the entire contact center system. This modular deployment approach ensures seamless integration of new features, bug fixes, and improvements while maintaining the stability of the overall solution.</p>
+  </li>
+</ul>
+
+<hr />
+
+<h1 id="solution-design">Solution Design</h1>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20230523/module_architecture.png" alt="High level architecture" />
+  <!--</a>-->
+  <figcaption>
+    <h4>High level architecture</h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>Now we have an overview of the benefits of a more modular Amazon Connect design we are going to start to go through the core of a modular design. We will initially look at the foundational functional side of the solution before in later blog posts we will look at management and CICD solutions. This is the left hand side of the architecture diagram above. Much of the work here will initially be in developing the flows and modules within connect, whereas later we will look at more of the supporting services in AWS to round out the solution.</p>
+
+<p>When designing the core of this solution we need to look at several areas, the building of the modules, how to store and retrieve the configuration for modules, and how to execute the modules within Connect.</p>
+
+<h3 id="executor-flow">Executor Flow</h3>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20230523/module_executor.png" alt="Module executor flow" />
+  <!--</a>-->
+  <figcaption>
+    <h4>Module executor flow</h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>Lets start with the executor flow. The main executor flow essentially takes a list of modules and calls them in sequence. This is the main flow within the connect solution, there may be other supporting flows for queues ans whispers etc, but all of the actual business logic and functionality is moved into the reusable modules. Looking in more detail at each part of this flow:</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20230523/module_executor_detail_1.png" alt="Module executor flow detail" />
+  <!--</a>-->
+  <figcaption>
+    <h4>Module executor flow detail</h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>Initially in this flow we need to retrieve the configuration from the database. This configuration describes all of the modules that will be executed and the settings for each of the modules. Fow this blog example will key this information from the dialled number of the contact center.</p>
+
+<p>To retrieve the data we use a simple lambda function such as the one below. This will retrieve configuration from Dynamo and just store the blob of JSON as a string. Why are we storing it as a JSON string? Well since we will be passing this configuration to other lambdas and not actually using it in flow blocks within amazon connect we do not need to parse it within connect. Amazon connect recently introduced JSON support in their lambda functions, allowing the native JSON object to be returned from a lambda call rather than, as below, a string. However this JSON support is not yet fully featured enough to allow us to set attributes with parts of the JSON response, and so in our case we cannot yet use this functionality.</p>
+
+<h4 id="modular_connect_configuration_loader">modular_connect_configuration_loader</h4>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">DynamoDBClient</span><span class="p">,</span> <span class="nx">ScanCommand</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@aws-sdk/client-dynamodb</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">unmarshall</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@aws-sdk/util-dynamodb</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">handler</span> <span class="o">=</span> <span class="k">async</span> <span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">context</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">DynamoDBClient</span><span class="p">();</span>
+  <span class="kd">const</span> <span class="nx">phoneNumber</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">Details</span><span class="p">.</span><span class="nx">ContactData</span><span class="p">.</span><span class="nx">SystemEndpoint</span><span class="p">.</span><span class="nx">Address</span><span class="p">;</span>
+
+  <span class="kd">const</span> <span class="nx">params</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">TableName</span><span class="p">:</span> <span class="dl">'</span><span class="s1">modular_connect_configurations</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">FilterExpression</span><span class="p">:</span> <span class="dl">'</span><span class="s1">phoneNumber = :phoneNumber</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">ExpressionAttributeValues</span><span class="p">:</span> <span class="p">{</span>
+      <span class="dl">'</span><span class="s1">:phoneNumber</span><span class="dl">'</span><span class="p">:</span> <span class="p">{</span> <span class="na">S</span><span class="p">:</span> <span class="nx">phoneNumber</span> <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">};</span>
+
+  <span class="k">try</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">command</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ScanCommand</span><span class="p">(</span><span class="nx">params</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">client</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">command</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">Items</span> <span class="o">&amp;&amp;</span> <span class="nx">response</span><span class="p">.</span><span class="nx">Items</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">configuration</span><span class="dl">"</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">unmarshall</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">Items</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+      <span class="p">}</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Item not found.</span><span class="dl">'</span><span class="p">);</span>
+      <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="dl">'</span><span class="s1">Error retrieving item:</span><span class="dl">'</span><span class="p">,</span> <span class="nx">error</span><span class="p">);</span>
+    <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>The response of this lambda function is an attribute called configuration that was looked up by the dialled number. The contents of the configuration would be like below:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+ </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"3311f720-7a45-4170-8db6-af0812504760"</span><span class="p">,</span><span class="w">
+ </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Example Call Center"</span><span class="p">,</span><span class="w">
+ </span><span class="nl">"phoneNumber"</span><span class="p">:</span><span class="w"> </span><span class="s2">"+6465909655"</span><span class="p">,</span><span class="w">
+ </span><span class="nl">"modules"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+   </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"7ae76d80-9274-4129-8f00-c1640b805bc3"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"flowid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0a0e2425-8138-40e7-860f-2df1a90b977c"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Sets the voice from the list available in this module"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"SetVoice"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"settings"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"Voice"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Aria"</span><span class="w">
+   </span><span class="p">}</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+   </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"a41f977c-d2b7-4444-8248-4ce8b981e9e4"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"flowid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"e8e2efa6-dc0f-4a5c-8ad2-8f37b687d7b1"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Plays the welcome prompt"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"PlayPrompt"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"settings"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"PromptType"</span><span class="p">:</span><span class="w"> </span><span class="s2">"text"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"PromptValue"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Welcome to Example Limited"</span><span class="w">
+   </span><span class="p">}</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+   </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"528307de-a801-4b5a-9394-572cf3076f52"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"flowid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"73106255-4883-4f57-b02c-42d9f73a2458"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"A DTMF menu to select either a password reset or technical support"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"DTMFMenu"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"settings"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"1Action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"playMessageHangup"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"1Value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"To reset your password please visit www.example.com/passwordreset. Thank you, good bye."</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"2Action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"setWorkingQueue"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"2Value"</span><span class="p">:</span><span class="w"> </span><span class="s2">"technical_support_queue"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"MenuMessage"</span><span class="p">:</span><span class="w"> </span><span class="s2">"For password resets please press 1. For other technical support press 2."</span><span class="w">
+   </span><span class="p">}</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="p">{</span><span class="w">
+   </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1c504dba-15bf-48b3-aef4-310711f5e4ef"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"flowid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"47a5346e-e1a4-4f83-9d10-ba86c88ebccc"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Plays the estimated wait time"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"exitAction"</span><span class="p">:</span><span class="w"> </span><span class="s2">"transferWorkingQueue"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"EstimatedWaitTime"</span><span class="p">,</span><span class="w">
+   </span><span class="nl">"settings"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+ </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Here we have all of the modules that will be executed as part of this configuration. We will discuss the actual individual module configuration later in this post. For now though we can see fairly clearly what what configuration would be doing, setting a voice, playing a welcome prompt, offering a simple DTMF menu and then playing the estimated wait time before transferring to a queue. The thing to note even at this point is that we are just configuring settings for these modules, the modules them selves can have any amount of standardized behavior. For example the DTMF module configuration above does not need to specify behavior for invalid entries, or time outs etc. All of that is handled by the module in a consistent way.</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20230523/module_executor_detail_2.png" alt="Module executor flow detail" />
+  <!--</a>-->
+  <figcaption>
+    <h4>Module executor flow detail</h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>Now we have retrieved the configuration, we need to start executing the modules that have been defined. To do this we will call our module executor lambda function and pass in the configuration. This is the main lambda that handles all of the logic in determining which module should be executed next. In the example lambda code below it simply iterates through the defined list of modules in our configuration. If there is a module to be executed it sets the details as attributes.</p>
+
+<h4 id="modular_connect_executor">modular_connect_executor</h4>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">const</span> <span class="nx">handler</span> <span class="o">=</span> <span class="k">async</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">event</span><span class="p">));</span>
+    
+    <span class="kd">let</span> <span class="nx">moduleListConfiguration</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">Details</span><span class="p">.</span><span class="nx">Parameters</span><span class="p">.</span><span class="nx">internal_module_list_configuration</span><span class="p">);</span>
+    <span class="kd">let</span> <span class="nx">lastModuleId</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">Details</span><span class="p">.</span><span class="nx">Parameters</span><span class="p">.</span><span class="nx">internal_module_executor_last_module_id</span><span class="p">;</span>
+    
+    <span class="c1">//the next module to execute</span>
+    <span class="kd">let</span> <span class="nx">module</span> <span class="o">=</span> <span class="nx">moduleListConfiguration</span><span class="p">.</span><span class="nx">modules</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="k">if</span><span class="p">(</span><span class="nx">lastModuleId</span><span class="p">){</span>
+        <span class="nx">module</span> <span class="o">=</span> <span class="nx">getNextObject</span><span class="p">(</span><span class="nx">moduleListConfiguration</span><span class="p">.</span><span class="nx">modules</span><span class="p">,</span> <span class="nx">lastModuleId</span><span class="p">);</span>
+    <span class="p">}</span>
+    
+    <span class="k">if</span><span class="p">(</span><span class="nx">module</span> <span class="o">===</span> <span class="kc">null</span><span class="p">){</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="na">internal_module_executor_action</span><span class="p">:</span> <span class="dl">"</span><span class="s2">stop</span><span class="dl">"</span>
+        <span class="p">}</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">{</span>
+             <span class="na">internal_module_executor_arn</span><span class="p">:</span> <span class="nx">module</span><span class="p">.</span><span class="nx">arn</span><span class="p">,</span>
+             <span class="na">internal_module_executor_settings</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">module</span><span class="p">.</span><span class="nx">settings</span><span class="p">),</span>
+             <span class="na">internal_module_executor_last_module_id</span><span class="p">:</span> <span class="nx">module</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
+             <span class="na">internal_module_executor_module_exit_action</span><span class="p">:</span> <span class="nx">module</span><span class="p">.</span><span class="nx">exitAction</span><span class="p">,</span>
+             <span class="na">internal_module_executor_module_exit_action_value</span><span class="p">:</span> <span class="nx">module</span><span class="p">.</span><span class="nx">exitActionValue</span><span class="p">,</span>
+             <span class="na">internal_module_executor_action</span><span class="p">:</span> <span class="dl">"</span><span class="s2">continue</span><span class="dl">"</span><span class="p">,</span>
+        <span class="p">};</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kd">function</span> <span class="nx">getNextObject</span><span class="p">(</span><span class="nx">jsonArray</span><span class="p">,</span> <span class="nx">objectId</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">index</span> <span class="o">=</span> <span class="nx">jsonArray</span><span class="p">.</span><span class="nx">findIndex</span><span class="p">(</span><span class="nx">obj</span> <span class="o">=&gt;</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">id</span> <span class="o">===</span> <span class="nx">objectId</span><span class="p">);</span>
+  
+  <span class="k">if</span> <span class="p">(</span><span class="nx">index</span> <span class="o">!==</span> <span class="o">-</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">index</span> <span class="o">&lt;</span> <span class="nx">jsonArray</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">jsonArray</span><span class="p">[</span><span class="nx">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">];</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20230523/module_executor_detail_3.png" alt="Module executor flow detail" />
+  <!--</a>-->
+  <figcaption>
+    <h4>Module executor flow detail</h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>Then we invoke the module that the executor lambda has defined we should execute. From the point of view of this executor flow we don’t need to know what the module does, we just invoke it and then wait until it returns. If there was an unrecoverable error in the module we would disconnect the flow at this point, but the normal case is to continue.</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20230523/module_executor_detail_4.png" alt="Module executor flow detail" />
+  <!--</a>-->
+  <figcaption>
+    <h4>Module executor flow detail</h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>When the module returns we check to see if there was any specific exit behavior we should perform. This is essentially where a module can specify that when it completes there should be some exit behavior. For example it may say that the call should be terminated, or that the call should got to a queue.</p>
+
+<p>If there is no specific exit condition from the module, we will simply loop back to our module executor lambda to find the next module that we want to execute, this is the “no match” connector in the flow above. This is the core of the solution, it will constantly loop around executing the modules until an exit condition is set.</p>
+
+<h3 id="module-implementation">Module Implementation</h3>
+
+<p>Now we have the main executor flow running its time to start looking at the modules and how they will be designed.</p>
+
+<p>One of the most important things to consider when implementing any solution at scale is a consistent approach to the configuration and build of any reusable components. In our case we are building reusable modules in Amazon connect. Although these are inherently designed by AWS to be reusable there is no formal pattern for how to build a module and no well defined best practices for the way in which we will be using the,. So the first thing we need to do is designing and documenting a pattern for how we will build modules. This is a module API if you will.</p>
+
+<p>We want to treat a module as a self contained, isolated, and functional piece of software. To do this we need to have some consistent patterns.</p>
+
+<h4 id="naming-conventions-for-modules">Naming conventions for modules</h4>
+
+<p>Naming is important so lets define some simple patterns:</p>
+<ul>
+  <li>Module names: (“ModuleName”): Simple camel case and descriptive as this will be displayed to operations teams</li>
+  <li>Module Settings (“<em>module_setting_</em>name”): these are the settings for the module. When the module is configured in our database, these are the settings that are passed to the module. Think of a module that plays a prompt, the setting would be the text of that prompt.</li>
+  <li>Internal attributes (“<em>internal_</em>attribute_name”): these are attributes that are used by the module/flow to maintain is own state, they are not expected to be used anywhere else other than within that module, and can be safely stripped from all contact flow records  as they have no relevance to anything except the context of the module while it executes.</li>
+  <li>Output attributes (“<em>output_</em>attribute_name”): these are the attributes that the flow may set as an output from the flow. These are things that the module may want to share with other flows. Think of a module that calculates the Estimated Wait Time of a queue, this is a useful thing that other modules may want to know. So this is set as an output attribute from the flow.</li>
+</ul>
+
+<h4 id="module-design">Module design</h4>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20230523/play_prompt_module.png" alt="Module for playing a prompt" />
+  <!--</a>-->
+  <figcaption>
+    <h4>Module for playing a prompt</h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>If we look at the design of a simple module it will have some distinct parts. At the start of the module we are calling a lambda function to flatten the settings that are passed into the module, this is so we can use all of the settings in the module itself. In our case for consistency reasons we are add a prefix to each setting of “module_setting” so that we can cleanly identify which settings were passed into the module. This will be important later when we are generating descriptors for modules.</p>
+
+<p>The simple lambda code to flatten the settings would look something like this:</p>
+
+<h4 id="modular_connect_json_to_attributes">modular_connect_json_to_attributes</h4>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">const</span> <span class="nx">handler</span> <span class="o">=</span> <span class="k">async</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">addPrefixToKeys</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">Details</span><span class="p">.</span><span class="nx">Parameters</span><span class="p">.</span><span class="nx">jsonString</span><span class="p">),</span> <span class="dl">"</span><span class="s2">module_setting_</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="kd">function</span> <span class="nx">addPrefixToKeys</span><span class="p">(</span><span class="nx">jsonObject</span><span class="p">,</span> <span class="nx">prefix</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">{};</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="kd">const</span> <span class="nx">key</span> <span class="k">in</span> <span class="nx">jsonObject</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">jsonObject</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">key</span><span class="p">))</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="nx">newKey</span> <span class="o">=</span> <span class="s2">`</span><span class="p">${</span><span class="nx">prefix</span><span class="p">}${</span><span class="nx">key</span><span class="p">}</span><span class="s2">`</span><span class="p">;</span>
+      <span class="nx">result</span><span class="p">[</span><span class="nx">newKey</span><span class="p">]</span> <span class="o">=</span> <span class="nx">jsonObject</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>So now we have the settings in the module we can perform whatever is needed. In this example we are going to play a prompt, and depending on the “type” setting in the module settings we will either play thr prompt as text, SSML, from s3, or from the prompt library. This is a simple module but we could easily augment it with more features and settings, perhaps we want to write out to a special audit log whenever a prompt is played, maybe we want to require that the prompt is only played when a certain condition is met. This is an overly simple example of a module but the idea is hopefully clear, the module can perform a lot of functionality and the settings just decide what it does. This means we have a highly consistent and reusable building block for our contact center.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this blog post we introduced the idea and benefits from a business perspective around using modules in an Amazon Connect contact center solution. We have started to build some core foundational components execute the modules that had been configured within Dynamo. However as you will have realized there is more that needs to be done, we need a way build the configuration for these modules, a way to describe the configuration and behavior of different call centers or numbers that are called. We will look at this in the next blog post, where we will define a front end to define and manage the modules. It is at that point that the value to an operations team will become even more apparent.</p>]]></content><author><name>Ian Ryan</name></author><category term="AWS" /><category term="Amazon Connect" /><summary type="html"><![CDATA[Amazon Connect: Embracing Modular Flows for Enhanced Efficiency and Scalability]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/images/gen/blog/blog-2.webp" /><media:content medium="image" url="http://localhost:4000/assets/images/gen/blog/blog-2.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry><entry><title type="html">Amazon Connect: Customer control of queue music</title><link href="http://localhost:4000/blog/2023-04-26-queue-music-selection/" rel="alternate" type="text/html" title="Amazon Connect: Customer control of queue music" /><published>2023-03-26T22:28:42+13:00</published><updated>2023-03-26T22:28:42+13:00</updated><id>http://localhost:4000/blog/queue-music-selection</id><content type="html" xml:base="http://localhost:4000/blog/2023-04-26-queue-music-selection/"><![CDATA[<blockquote>
+  <p>This is the first in a series of posts where I will be looking into aspects of Amazon Connect, from the customer experience, to the agents experience. Eventually also discussing the day to day operations and dev-ops involved in managing an enterprise level contact centre solution.</p>
+</blockquote>
+
+<h1 id="overview">Overview</h1>
+
+<p>In today’s world, customer experience plays a vital role in the success of any business. When it comes to call centers, one of the essential elements of customer experience is the music that customers listen to while waiting in a queue. Amazon Connect, a cloud-based contact center solution, provides an excellent opportunity for businesses to customize their queue music to enhance customer experience.</p>
+
+<p>Traditionally, call centers play generic repetitive music for customers waiting in a queue. There is little consideration for the preferences of customers regarding the music that they may be hearing for potentially a significant amount of time. Some customers may prefer to change the music, or some customers may even wish to just wait in silence. In this blog post, we will discuss the benefits and a simple design for allowing users to have interactive control of the music that they are hearing in a way familiar to them by allowing them to skip music tracks, or even stop the music.</p>
+
+<h2 id="benefits">Benefits</h2>
+
+<p>There are many benefits of allowing customers to have more control of the music that they are hearing when they are waiting in a queue, to name just a few:</p>
+
+<ul>
+  <li>
+    <p><strong>Increased Satisfaction</strong>: Allowing customers to control the queue music can increase their overall satisfaction with the call center experience. Customers are more likely to feel heard and respected if they are given some control over how they are spending their time waiting.</p>
+  </li>
+  <li>
+    <p><strong>Reduced Frustration</strong>: Listening to the same music on repeat can be frustrating, especially if customers are on hold for a long time. Giving them the option to skip songs or play silence can reduce this frustration and make the wait time more tolerable.</p>
+  </li>
+  <li>
+    <p><strong>Improved Perception of Time</strong>: When customers have control over their wait time, they are more likely to be engaged and less likely to feel that time is dragging. This can lead to a better perception of the overall wait time, even if the wait time is long.</p>
+  </li>
+  <li>
+    <p><strong>Enhanced Brand Perception</strong>: Allowing customers to control the queue music can create a more positive perception of the brand. Customers will appreciate the effort made to provide a more personalized experience and may be more likely to recommend the brand to others.</p>
+  </li>
+  <li>
+    <p><strong>Better Insights</strong>: If customers are given the option to skip songs or play silence, the call center can gather valuable insights into customer preferences. By analyzing which songs are skipped the most or which customers choose silence, call centers can make informed decisions about which music to play in the future.</p>
+  </li>
+</ul>
+
+<h2 id="prerequisites">Prerequisites</h2>
+
+<p>The overall concepts in this blog post do not require any prior knowledge of Amazon Connect, but the actual example implementation assumes a knowledge of Amazon Connect with the ability to create flows and set up a basic call center. An understanding of AWS services is also assumed.</p>
+
+<h2 id="example-design">Example design</h2>
+
+<p>To enable customers to choose their own queue music in Amazon Connect, a Queue Flow needs to be created that can accept input from the customer while they are waiting. This custom Queue Flow bypasses the <em>loop prompts</em> block as it needs to gather input from the customer. This is a common pattern when needing to execute more advanced treatments in the queue. A lambda function is used that selects which  music is to be played, in our example this music list is just a parameter, but it would usually be part of your data driven contact center design. The selected music is then played using a get customer input block so that the customer is given an interactive ability to interrupt the music with key presses on their phone.</p>
+
+<p>The options that are available to the customer are the ability to choose the next track to be played, the previous track, or even to stop the current track from playing altogether. This allows the customer to wait in silence if they wish, which is a surprisingly common request amongst callers.</p>
+
+<p>In this example we have also included the ability to provide additional information about the queue and wait times. For example, the system can provide, on request, information for the customer about their estimated wait time, position in the queue, or any relevant announcements. This can help to reduce customer frustration and provide a more engaging and informative experience.</p>
+
+<figure>
+  <!--<a href="https://github.com/ianchristopherryan/blogs/2023-04-26" target="_blank">-->
+    <img src="/assets/images/blog/20230426/ExampleQueueMusic.png" alt="Amazon Connect Flow diagram showing a way to select queue music" />
+  <!--</a>-->
+  <figcaption>
+    <h4>Flow for music selection choices in Amazon Connect</h4>
+    <p>Example Contact Flow Music Selection</p>
+  </figcaption>
+</figure>
+
+<p>The lambda function that is called from the custom Queue Flow to select the queue music is a simple function that can be easily modified to be reused in other contact flows. In fact in your call center implementations you should/would have a set of utility functions that you use in your flows, this is a utility function for list manipulation. The function is designed to take in an array of songs, which can be either reference Amazon Connect prompts or even music files stored in Amazon S3. It also takes in an action to be performed, such as selecting the next or previous track, and the last song that was played.</p>
+
+<p>The lambda function then uses this information to determine which song should be played next. If the action is to select the next track, the function simply returns the next song in the array, looping back to the start of the array if necessary. Similarly, if the action is to select the previous track, the function returns the previous song in the array, looping back to the end of the array if necessary.</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">const</span> <span class="nx">handler</span> <span class="o">=</span> <span class="k">async</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="cm">/*
+  This simple lambda will take a list of songs and return the next, 
+  previous, or silence depending on the action specified.
+  */</span>
+
+  <span class="kd">let</span> <span class="nx">value</span> <span class="o">=</span> <span class="nx">event</span><span class="p">[</span><span class="dl">'</span><span class="s1">Details</span><span class="dl">'</span><span class="p">][</span><span class="dl">'</span><span class="s1">Parameters</span><span class="dl">'</span><span class="p">][</span><span class="dl">'</span><span class="s1">currentSong</span><span class="dl">'</span><span class="p">];</span>
+  <span class="kd">let</span> <span class="nx">array</span> <span class="o">=</span> <span class="nx">event</span><span class="p">[</span><span class="dl">'</span><span class="s1">Details</span><span class="dl">'</span><span class="p">][</span><span class="dl">'</span><span class="s1">Parameters</span><span class="dl">'</span><span class="p">][</span><span class="dl">'</span><span class="s1">songList</span><span class="dl">'</span><span class="p">];</span>
+  <span class="kd">let</span> <span class="nx">silence</span> <span class="o">=</span> <span class="nx">event</span><span class="p">[</span><span class="dl">'</span><span class="s1">Details</span><span class="dl">'</span><span class="p">][</span><span class="dl">'</span><span class="s1">Parameters</span><span class="dl">'</span><span class="p">][</span><span class="dl">'</span><span class="s1">silence</span><span class="dl">'</span><span class="p">];</span>
+  <span class="kd">let</span> <span class="nx">action</span> <span class="o">=</span> <span class="nx">event</span><span class="p">[</span><span class="dl">'</span><span class="s1">Details</span><span class="dl">'</span><span class="p">][</span><span class="dl">'</span><span class="s1">Parameters</span><span class="dl">'</span><span class="p">][</span><span class="dl">'</span><span class="s1">action</span><span class="dl">'</span><span class="p">];</span>
+
+  <span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="dl">""</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">action</span><span class="p">).</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">//no existing element so return the first</span>
+    <span class="nx">result</span> <span class="o">=</span> <span class="nx">array</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">action</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">stop</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">//just return the silence parameter</span>
+    <span class="nx">result</span> <span class="o">=</span> <span class="nx">silence</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">index</span> <span class="o">=</span> <span class="nx">array</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+    <span class="c1">//get the next or previous element</span>
+    <span class="kd">let</span> <span class="nx">newIndex</span> <span class="o">=</span> <span class="nx">action</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">next</span><span class="dl">"</span> <span class="p">?</span> <span class="nx">index</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:</span> <span class="nx">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+
+    <span class="c1">//make sure we loop around the array to return an item</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">newIndex</span> <span class="o">&gt;=</span> <span class="nx">array</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">newIndex</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">newIndex</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">newIndex</span> <span class="o">=</span> <span class="nx">array</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="nx">result</span> <span class="o">=</span> <span class="nx">array</span><span class="p">[</span><span class="nx">newIndex</span><span class="p">];</span>
+  <span class="p">}</span>
+
+  <span class="c1">//return the new current song to play</span>
+  <span class="kd">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">currentSong</span><span class="p">:</span> <span class="nx">result</span>
+  <span class="p">};</span>
+
+  <span class="k">return</span> <span class="nx">response</span><span class="p">;</span>
+
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>Of course in a full contact center, there would be many more treatments being offered in the queue to help enhance the customer experience and improve efficiency. There would most likely be treatments such as offering call-back options to customers, where they can choose to receive a call back from a representative instead of waiting on hold or other treatments such as playing informational or branding messages while customers are waiting in the queue.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In conclusion, allowing customers to control the queue music in an Amazon Connect contact center can greatly enhance the overall customer experience. By providing customers with the ability to skip tracks or listen to silence, call centers can reduce customer frustration and create a more personalized experience.</p>
+
+<p>In addition, by providing customers with engaging and informative music options, call centers can create a more memorable experience that builds customer loyalty and satisfaction. The ability to choose their own music can also help customers feel more in control of their wait time, leading to a more positive overall experience.</p>
+
+<p>Implementing this functionality in Amazon Connect is straightforward, requiring only a custom Queue Flow and a simple lambda function to select and control the queue music. By creating a generic utility function that can be called from multiple contact flows, call centers can streamline their development process and ensure consistency across different flows.</p>
+
+<p>Overall, giving customers control over the queue music in Amazon Connect can greatly enhance the customer experience and help call centers build stronger relationships with their customers. By providing engaging and personalized options, call centers can reduce frustration and build loyalty, leading to greater customer satisfaction and long-term success.</p>
+
+<h2 id="source">Source</h2>
+
+<p>As always with these blog posts, the full source of the code is available on my github page.</p>]]></content><author><name>Ian Ryan</name></author><category term="AWS" /><category term="Amazon Connect" /><category term="CX" /><summary type="html"><![CDATA[Allowing users to select their own queue music improves customer experience.]]></summary><media:thumbnail xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:4000/assets/images/gen/blog/blog-1.webp" /><media:content medium="image" url="http://localhost:4000/assets/images/gen/blog/blog-1.webp" xmlns:media="http://search.yahoo.com/mrss/" /></entry></feed>
