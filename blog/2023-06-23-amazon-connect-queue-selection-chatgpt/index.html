@@ -315,7 +315,7 @@
 
 <h1 id="transforming-contact-center-experiences-a-detailed-overview-of-queue-selection-using-generative-ai">Transforming Contact Center Experiences: A Detailed Overview of Queue Selection using Generative AI</h1>
 
-<p>In the swiftly evolving digital landscape, the key to thriving in the market is superior customer service. The crux of this service often lies in the pivotal moment of customer interaction, when they reach out for help or to inquire about your offerings. It’s this precise moment that can determine whether your relationship with the customer will flourish or falter. Sadly, many contact centers grapple with the cumbersome and dated mechanisms of queue selection, leading to long waiting times and frustrating experiences. More often that not anecdotes about interactions with call centre automated systems are negative with frustrated customers trying to coax the bot into the choice they are trying to make. However, the integration of artificial intelligence (AI), such as generative models like ChatGPT from OpenAI, into platforms like Amazon Connect, can revolutionize these traditional processes.</p>
+<p>In the swiftly evolving digital landscape, the key to thriving in the market is superior customer service. The crux of this service often lies in the pivotal moment of customer interaction, when they reach out for help or to inquire about your offerings. It’s this precise moment that can determine whether your relationship with the customer will flourish or falter. Sadly, many contact centers grapple with the cumbersome and dated mechanisms of queue selection, leading to long waiting times and frustrating experiences. More often that not anecdotes about interactions with call center automated systems are negative with frustrated customers trying to coax the bot into the choice they are trying to make. However, the integration of artificial intelligence (AI), such as generative models like ChatGPT from OpenAI, into platforms like Amazon Connect, can revolutionize these traditional processes.</p>
 
 <h2 id="the-archaic-landscape-of-contact-centers">The Archaic Landscape of Contact Centers</h2>
 
@@ -325,7 +325,7 @@
 
 <h2 id="the-emergence-of-ai-in-contact-centers">The Emergence of AI in Contact Centers</h2>
 
-<p>The integration of AI technologies into contact centers is a game-changer. Among the various applications of AI, its potential to radically simplify queue selection stands out. Generative AI models, like ChatGPT, which we use here as an example, understand and process natural language inputs, rendering them ideal for queue selection in contact centers. They don’t need explicit training; instead, we are going to use them as a tool to select the best queue in our contact centre by solely describing our queues to the AI in natural language.</p>
+<p>The integration of AI technologies into contact centers is a game-changer. Among the various applications of AI, its potential to radically simplify queue selection stands out. Generative AI models, like ChatGPT, which we use here as an example, understand and process natural language inputs, rendering them ideal for queue selection in contact centers. They don’t need explicit training; instead, we are going to use them as a tool to select the best queue in our contact center by solely describing our queues to the AI in natural language.</p>
 
 <h2 id="the-potential-of-generative-ai-in-queue-selection-with-amazon-connect">The Potential of Generative AI in Queue Selection with Amazon Connect</h2>
 
@@ -339,7 +339,7 @@
     <p><strong>Customer interaction:</strong> When a customer calls, Amazon Connect greets them with a simple hardcoded message such as “Why are you calling today?” to initiate the conversation. This is just so the customer can start talking, it doesn’t matter what they say as from this point on the AI will be interacting with them to find out why they are calling.</p>
   </li>
   <li>
-    <p><strong>Processing the customer’s response:</strong> The customer’s response is channeled through a Lambda function, which pairs the response with all of the queue descriptions. This gives the AI sufficient information about our specific contact centre.</p>
+    <p><strong>Processing the customer’s response:</strong> The customer’s response is channeled through a Lambda function, which pairs the response with all of the queue descriptions. This gives the AI sufficient information about our specific contact center.</p>
   </li>
   <li>
     <p><strong>Queue selection with AI:</strong> The queue descriptions, coupled with the customer’s response, are then processed by a generative AI model. The AI evaluates this data to ascertain the most suitable queue for the customer’s needs.</p>
@@ -698,7 +698,7 @@ Do not include any explanations, only provide a  RFC8259 compliant JSON response
 
 <h2 id="conclusion">Conclusion</h2>
 
-<p>So what have we shown here? Well the primary goal is simplification by using an abstracted highly advanced tool. In this case we have just described our contact centre queue structure to an AI and then allowed it to make all the decisions around routing to those queues. This is a hugely simplified routing model. You may be asking yourself at this point questions such as “what about queue opening hours, or what about priority queues?” and these are great follow up questions to this post. Of course the answer is so simple it can just be said here in the conclusion, just describe any other business requirements to the AI as well and let it work it out. This is where I see these contact centres going, no more of these custom rules, simply a description of what you want your customer experience to be and then an AI will front and handle all customer interactions.</p>
+<p>So what have we shown here? Well the primary goal is simplification by using an abstracted highly advanced tool. In this case we have just described our contact center queue structure to an AI and then allowed it to make all the decisions around routing to those queues. This is a hugely simplified routing model. You may be asking yourself at this point questions such as “what about queue opening hours, or what about priority queues?” and these are great follow up questions to this post. Of course the answer is so simple it can just be said here in the conclusion, just describe any other business requirements to the AI as well and let it work it out. This is where I see these contact centers going, no more of these custom rules, simply a description of what you want your customer experience to be and then an AI will front and handle all customer interactions.</p>
 
 </div>
         
