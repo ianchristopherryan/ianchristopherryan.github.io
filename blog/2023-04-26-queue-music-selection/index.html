@@ -355,7 +355,7 @@
 
 <p>The lambda function then uses this information to determine which song should be played next. If the action is to select the next track, the function simply returns the next song in the array, looping back to the start of the array if necessary. Similarly, if the action is to select the previous track, the function returns the previous song in the array, looping back to the end of the array if necessary.</p>
 
-<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">const</span> <span class="nx">handler</span> <span class="o">=</span> <span class="k">async</span> <span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">const</span> <span class="nx">handler</span> <span class="o">=</span> <span class="k">async </span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
   <span class="cm">/*
   This simple lambda will take a list of songs and return the next, 
   previous, or silence depending on the action specified.
@@ -368,21 +368,21 @@
 
   <span class="kd">let</span> <span class="nx">result</span> <span class="o">=</span> <span class="dl">""</span>
 
-  <span class="k">if</span> <span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">action</span><span class="p">).</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if </span><span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nf">keys</span><span class="p">(</span><span class="nx">action</span><span class="p">).</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">//no existing element so return the first</span>
     <span class="nx">result</span> <span class="o">=</span> <span class="nx">array</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-  <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">action</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">stop</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="k">if </span><span class="p">(</span><span class="nx">action</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">stop</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
     <span class="c1">//just return the silence parameter</span>
     <span class="nx">result</span> <span class="o">=</span> <span class="nx">silence</span>
   <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-    <span class="kd">const</span> <span class="nx">index</span> <span class="o">=</span> <span class="nx">array</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">index</span> <span class="o">=</span> <span class="nx">array</span><span class="p">.</span><span class="nf">indexOf</span><span class="p">(</span><span class="nx">value</span><span class="p">);</span>
     <span class="c1">//get the next or previous element</span>
     <span class="kd">let</span> <span class="nx">newIndex</span> <span class="o">=</span> <span class="nx">action</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">next</span><span class="dl">"</span> <span class="p">?</span> <span class="nx">index</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:</span> <span class="nx">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
 
     <span class="c1">//make sure we loop around the array to return an item</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">newIndex</span> <span class="o">&gt;=</span> <span class="nx">array</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if </span><span class="p">(</span><span class="nx">newIndex</span> <span class="o">&gt;=</span> <span class="nx">array</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="p">{</span>
       <span class="nx">newIndex</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">newIndex</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if </span><span class="p">(</span><span class="nx">newIndex</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
       <span class="nx">newIndex</span> <span class="o">=</span> <span class="nx">array</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
     <span class="p">}</span>
 

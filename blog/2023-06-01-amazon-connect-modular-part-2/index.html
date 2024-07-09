@@ -387,15 +387,15 @@
   <span class="nx">DeleteCommand</span><span class="p">,</span>
 <span class="p">}</span> <span class="k">from</span> <span class="dl">"</span><span class="s2">@aws-sdk/lib-dynamodb</span><span class="dl">"</span><span class="p">;</span>
 
-<span class="kd">const</span> <span class="nx">client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">DynamoDBClient</span><span class="p">({});</span>
+<span class="kd">const</span> <span class="nx">client</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DynamoDBClient</span><span class="p">({});</span>
 
 <span class="kd">const</span> <span class="nx">dynamo</span> <span class="o">=</span> <span class="nx">DynamoDBDocumentClient</span><span class="p">.</span><span class="k">from</span><span class="p">(</span><span class="nx">client</span><span class="p">);</span>
 
 <span class="kd">const</span> <span class="nx">configurationsTableName</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">modular_connect_configurations</span><span class="dl">"</span><span class="p">;</span>
 <span class="kd">const</span> <span class="nx">moduleDescriptorTableName</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">modular_connect_modules</span><span class="dl">"</span><span class="p">;</span>
 
-<span class="k">export</span> <span class="kd">const</span> <span class="nx">handler</span> <span class="o">=</span> <span class="k">async</span> <span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">context</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-  <span class="nx">console</span><span class="p">.</span><span class="nx">info</span><span class="p">(</span><span class="dl">"</span><span class="s2">EVENT</span><span class="se">\n</span><span class="dl">"</span> <span class="o">+</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">handler</span> <span class="o">=</span> <span class="k">async </span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">context</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="dl">"</span><span class="s2">EVENT</span><span class="se">\n</span><span class="dl">"</span> <span class="o">+</span> <span class="nx">JSON</span><span class="p">.</span><span class="nf">stringify</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
   
   <span class="kd">let</span> <span class="nx">body</span><span class="p">;</span>
   <span class="kd">let</span> <span class="nx">statusCode</span> <span class="o">=</span> <span class="mi">200</span><span class="p">;</span>
@@ -404,16 +404,16 @@
   <span class="p">};</span>
 
   <span class="k">try</span> <span class="p">{</span>
-    <span class="k">switch</span> <span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">routeKey</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">switch </span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">routeKey</span><span class="p">)</span> <span class="p">{</span>
       <span class="k">case</span> <span class="dl">"</span><span class="s2">GET /modules</span><span class="dl">"</span><span class="p">:</span>
-        <span class="nx">body</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">dynamo</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span>
-          <span class="k">new</span> <span class="nx">ScanCommand</span><span class="p">({</span> <span class="na">TableName</span><span class="p">:</span> <span class="nx">moduleDescriptorTableName</span> <span class="p">})</span>
+        <span class="nx">body</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">dynamo</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span>
+          <span class="k">new</span> <span class="nc">ScanCommand</span><span class="p">({</span> <span class="na">TableName</span><span class="p">:</span> <span class="nx">moduleDescriptorTableName</span> <span class="p">})</span>
         <span class="p">);</span>
         <span class="nx">body</span> <span class="o">=</span> <span class="nx">body</span><span class="p">.</span><span class="nx">Items</span><span class="p">;</span>
         <span class="k">break</span><span class="p">;</span>
       <span class="k">case</span> <span class="dl">"</span><span class="s2">DELETE /configurations/{id}</span><span class="dl">"</span><span class="p">:</span>
-        <span class="k">await</span> <span class="nx">dynamo</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span>
-          <span class="k">new</span> <span class="nx">DeleteCommand</span><span class="p">({</span>
+        <span class="k">await</span> <span class="nx">dynamo</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span>
+          <span class="k">new</span> <span class="nc">DeleteCommand</span><span class="p">({</span>
             <span class="na">TableName</span><span class="p">:</span> <span class="nx">configurationsTableName</span><span class="p">,</span>
             <span class="na">Key</span><span class="p">:</span> <span class="p">{</span>
               <span class="na">id</span><span class="p">:</span> <span class="nx">event</span><span class="p">.</span><span class="nx">pathParameters</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
@@ -423,8 +423,8 @@
         <span class="nx">body</span> <span class="o">=</span> <span class="s2">`Deleted item </span><span class="p">${</span><span class="nx">event</span><span class="p">.</span><span class="nx">pathParameters</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span><span class="s2">`</span><span class="p">;</span>
         <span class="k">break</span><span class="p">;</span>
       <span class="k">case</span> <span class="dl">"</span><span class="s2">GET /configurations/{id}</span><span class="dl">"</span><span class="p">:</span>
-        <span class="nx">body</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">dynamo</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span>
-          <span class="k">new</span> <span class="nx">GetCommand</span><span class="p">({</span>
+        <span class="nx">body</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">dynamo</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span>
+          <span class="k">new</span> <span class="nc">GetCommand</span><span class="p">({</span>
             <span class="na">TableName</span><span class="p">:</span> <span class="nx">configurationsTableName</span><span class="p">,</span>
             <span class="na">Key</span><span class="p">:</span> <span class="p">{</span>
               <span class="na">id</span><span class="p">:</span> <span class="nx">event</span><span class="p">.</span><span class="nx">pathParameters</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
@@ -434,15 +434,15 @@
         <span class="nx">body</span> <span class="o">=</span> <span class="nx">body</span><span class="p">.</span><span class="nx">Item</span><span class="p">;</span>
         <span class="k">break</span><span class="p">;</span>
       <span class="k">case</span> <span class="dl">"</span><span class="s2">GET /configurations</span><span class="dl">"</span><span class="p">:</span>
-        <span class="nx">body</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">dynamo</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span>
-          <span class="k">new</span> <span class="nx">ScanCommand</span><span class="p">({</span> <span class="na">TableName</span><span class="p">:</span> <span class="nx">configurationsTableName</span> <span class="p">})</span>
+        <span class="nx">body</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">dynamo</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span>
+          <span class="k">new</span> <span class="nc">ScanCommand</span><span class="p">({</span> <span class="na">TableName</span><span class="p">:</span> <span class="nx">configurationsTableName</span> <span class="p">})</span>
         <span class="p">);</span>
         <span class="nx">body</span> <span class="o">=</span> <span class="nx">body</span><span class="p">.</span><span class="nx">Items</span><span class="p">;</span>
         <span class="k">break</span><span class="p">;</span>
       <span class="k">case</span> <span class="dl">"</span><span class="s2">POST /configurations</span><span class="dl">"</span><span class="p">:</span>
-        <span class="kd">let</span> <span class="nx">requestJSON</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">body</span><span class="p">);</span>
-        <span class="k">await</span> <span class="nx">dynamo</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span>
-          <span class="k">new</span> <span class="nx">PutCommand</span><span class="p">({</span>
+        <span class="kd">let</span> <span class="nx">requestJSON</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nf">parse</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">body</span><span class="p">);</span>
+        <span class="k">await</span> <span class="nx">dynamo</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span>
+          <span class="k">new</span> <span class="nc">PutCommand</span><span class="p">({</span>
             <span class="na">TableName</span><span class="p">:</span> <span class="nx">configurationsTableName</span><span class="p">,</span>
             <span class="na">Item</span><span class="p">:</span> <span class="p">{</span>
               <span class="na">id</span><span class="p">:</span> <span class="nx">requestJSON</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
@@ -455,13 +455,13 @@
         <span class="nx">body</span> <span class="o">=</span> <span class="s2">`Put item </span><span class="p">${</span><span class="nx">requestJSON</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span><span class="s2">`</span><span class="p">;</span>
         <span class="k">break</span><span class="p">;</span>
       <span class="nl">default</span><span class="p">:</span>
-        <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">`Unsupported route: "</span><span class="p">${</span><span class="nx">event</span><span class="p">.</span><span class="nx">routeKey</span><span class="p">}</span><span class="s2">"`</span><span class="p">);</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nc">Error</span><span class="p">(</span><span class="s2">`Unsupported route: "</span><span class="p">${</span><span class="nx">event</span><span class="p">.</span><span class="nx">routeKey</span><span class="p">}</span><span class="s2">"`</span><span class="p">);</span>
     <span class="p">}</span>
-  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+  <span class="p">}</span> <span class="k">catch </span><span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">statusCode</span> <span class="o">=</span> <span class="mi">400</span><span class="p">;</span>
     <span class="nx">body</span> <span class="o">=</span> <span class="nx">err</span><span class="p">.</span><span class="nx">message</span><span class="p">;</span>
   <span class="p">}</span> <span class="k">finally</span> <span class="p">{</span>
-    <span class="nx">body</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">body</span><span class="p">);</span>
+    <span class="nx">body</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nf">stringify</span><span class="p">(</span><span class="nx">body</span><span class="p">);</span>
   <span class="p">}</span>
 
   <span class="k">return</span> <span class="p">{</span>

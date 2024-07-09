@@ -416,8 +416,8 @@
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">DynamoDBClient</span><span class="p">,</span> <span class="nx">ScanCommand</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@aws-sdk/client-dynamodb</span><span class="dl">'</span><span class="p">;</span>
 <span class="k">import</span> <span class="p">{</span> <span class="nx">unmarshall</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@aws-sdk/util-dynamodb</span><span class="dl">'</span><span class="p">;</span>
 
-<span class="k">export</span> <span class="kd">const</span> <span class="nx">handler</span> <span class="o">=</span> <span class="k">async</span> <span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">context</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-  <span class="kd">const</span> <span class="nx">client</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">DynamoDBClient</span><span class="p">();</span>
+<span class="k">export</span> <span class="kd">const</span> <span class="nx">handler</span> <span class="o">=</span> <span class="k">async </span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">context</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">client</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">DynamoDBClient</span><span class="p">();</span>
   <span class="kd">const</span> <span class="nx">phoneNumber</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">Details</span><span class="p">.</span><span class="nx">ContactData</span><span class="p">.</span><span class="nx">SystemEndpoint</span><span class="p">.</span><span class="nx">Address</span><span class="p">;</span>
 
   <span class="kd">const</span> <span class="nx">params</span> <span class="o">=</span> <span class="p">{</span>
@@ -429,19 +429,19 @@
   <span class="p">};</span>
 
   <span class="k">try</span> <span class="p">{</span>
-    <span class="kd">const</span> <span class="nx">command</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ScanCommand</span><span class="p">(</span><span class="nx">params</span><span class="p">);</span>
-    <span class="kd">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">client</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="nx">command</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">command</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ScanCommand</span><span class="p">(</span><span class="nx">params</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nx">client</span><span class="p">.</span><span class="nf">send</span><span class="p">(</span><span class="nx">command</span><span class="p">);</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">Items</span> <span class="o">&amp;&amp;</span> <span class="nx">response</span><span class="p">.</span><span class="nx">Items</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if </span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">Items</span> <span class="o">&amp;&amp;</span> <span class="nx">response</span><span class="p">.</span><span class="nx">Items</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
       <span class="k">return</span> <span class="p">{</span>
-        <span class="dl">"</span><span class="s2">configuration</span><span class="dl">"</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">unmarshall</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">Items</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="dl">"</span><span class="s2">configuration</span><span class="dl">"</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nf">stringify</span><span class="p">(</span><span class="nf">unmarshall</span><span class="p">(</span><span class="nx">response</span><span class="p">.</span><span class="nx">Items</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
       <span class="p">}</span>
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Item not found.</span><span class="dl">'</span><span class="p">);</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Item not found.</span><span class="dl">'</span><span class="p">);</span>
       <span class="k">return</span> <span class="kc">null</span><span class="p">;</span>
     <span class="p">}</span>
-  <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="dl">'</span><span class="s1">Error retrieving item:</span><span class="dl">'</span><span class="p">,</span> <span class="nx">error</span><span class="p">);</span>
+  <span class="p">}</span> <span class="k">catch </span><span class="p">(</span><span class="nx">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nf">error</span><span class="p">(</span><span class="dl">'</span><span class="s1">Error retrieving item:</span><span class="dl">'</span><span class="p">,</span> <span class="nx">error</span><span class="p">);</span>
     <span class="k">throw</span> <span class="nx">error</span><span class="p">;</span>
   <span class="p">}</span>
 <span class="p">};</span>
@@ -515,15 +515,15 @@
 <h4 id="modular_connect_executor">modular_connect_executor</h4>
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">const</span> <span class="nx">handler</span> <span class="o">=</span> <span class="k">async</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">event</span><span class="p">));</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nf">stringify</span><span class="p">(</span><span class="nx">event</span><span class="p">));</span>
     
-    <span class="kd">let</span> <span class="nx">moduleListConfiguration</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">Details</span><span class="p">.</span><span class="nx">Parameters</span><span class="p">.</span><span class="nx">internal_module_list_configuration</span><span class="p">);</span>
+    <span class="kd">let</span> <span class="nx">moduleListConfiguration</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nf">parse</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">Details</span><span class="p">.</span><span class="nx">Parameters</span><span class="p">.</span><span class="nx">internal_module_list_configuration</span><span class="p">);</span>
     <span class="kd">let</span> <span class="nx">lastModuleId</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">Details</span><span class="p">.</span><span class="nx">Parameters</span><span class="p">.</span><span class="nx">internal_module_executor_last_module_id</span><span class="p">;</span>
     
     <span class="c1">//the next module to execute</span>
     <span class="kd">let</span> <span class="nx">module</span> <span class="o">=</span> <span class="nx">moduleListConfiguration</span><span class="p">.</span><span class="nx">modules</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
     <span class="k">if</span><span class="p">(</span><span class="nx">lastModuleId</span><span class="p">){</span>
-        <span class="nx">module</span> <span class="o">=</span> <span class="nx">getNextObject</span><span class="p">(</span><span class="nx">moduleListConfiguration</span><span class="p">.</span><span class="nx">modules</span><span class="p">,</span> <span class="nx">lastModuleId</span><span class="p">);</span>
+        <span class="nx">module</span> <span class="o">=</span> <span class="nf">getNextObject</span><span class="p">(</span><span class="nx">moduleListConfiguration</span><span class="p">.</span><span class="nx">modules</span><span class="p">,</span> <span class="nx">lastModuleId</span><span class="p">);</span>
     <span class="p">}</span>
     
     <span class="k">if</span><span class="p">(</span><span class="nx">module</span> <span class="o">===</span> <span class="kc">null</span><span class="p">){</span>
@@ -533,7 +533,7 @@
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
         <span class="k">return</span> <span class="p">{</span>
              <span class="na">internal_module_executor_arn</span><span class="p">:</span> <span class="nx">module</span><span class="p">.</span><span class="nx">arn</span><span class="p">,</span>
-             <span class="na">internal_module_executor_settings</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">module</span><span class="p">.</span><span class="nx">settings</span><span class="p">),</span>
+             <span class="na">internal_module_executor_settings</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nf">stringify</span><span class="p">(</span><span class="nx">module</span><span class="p">.</span><span class="nx">settings</span><span class="p">),</span>
              <span class="na">internal_module_executor_last_module_id</span><span class="p">:</span> <span class="nx">module</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
              <span class="na">internal_module_executor_module_exit_action</span><span class="p">:</span> <span class="nx">module</span><span class="p">.</span><span class="nx">exitAction</span><span class="p">,</span>
              <span class="na">internal_module_executor_module_exit_action_value</span><span class="p">:</span> <span class="nx">module</span><span class="p">.</span><span class="nx">exitActionValue</span><span class="p">,</span>
@@ -542,10 +542,10 @@
     <span class="p">}</span>
 <span class="p">};</span>
 
-<span class="kd">function</span> <span class="nx">getNextObject</span><span class="p">(</span><span class="nx">jsonArray</span><span class="p">,</span> <span class="nx">objectId</span><span class="p">)</span> <span class="p">{</span>
-  <span class="kd">const</span> <span class="nx">index</span> <span class="o">=</span> <span class="nx">jsonArray</span><span class="p">.</span><span class="nx">findIndex</span><span class="p">(</span><span class="nx">obj</span> <span class="o">=&gt;</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">id</span> <span class="o">===</span> <span class="nx">objectId</span><span class="p">);</span>
+<span class="kd">function</span> <span class="nf">getNextObject</span><span class="p">(</span><span class="nx">jsonArray</span><span class="p">,</span> <span class="nx">objectId</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">index</span> <span class="o">=</span> <span class="nx">jsonArray</span><span class="p">.</span><span class="nf">findIndex</span><span class="p">(</span><span class="nx">obj</span> <span class="o">=&gt;</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">id</span> <span class="o">===</span> <span class="nx">objectId</span><span class="p">);</span>
   
-  <span class="k">if</span> <span class="p">(</span><span class="nx">index</span> <span class="o">!==</span> <span class="o">-</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">index</span> <span class="o">&lt;</span> <span class="nx">jsonArray</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if </span><span class="p">(</span><span class="nx">index</span> <span class="o">!==</span> <span class="o">-</span><span class="mi">1</span> <span class="o">&amp;&amp;</span> <span class="nx">index</span> <span class="o">&lt;</span> <span class="nx">jsonArray</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">return</span> <span class="nx">jsonArray</span><span class="p">[</span><span class="nx">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">];</span>
   <span class="p">}</span>
 
@@ -617,14 +617,14 @@
 <h4 id="modular_connect_json_to_attributes">modular_connect_json_to_attributes</h4>
 
 <div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="kd">const</span> <span class="nx">handler</span> <span class="o">=</span> <span class="k">async</span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="nx">addPrefixToKeys</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">Details</span><span class="p">.</span><span class="nx">Parameters</span><span class="p">.</span><span class="nx">jsonString</span><span class="p">),</span> <span class="dl">"</span><span class="s2">module_setting_</span><span class="dl">"</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nf">addPrefixToKeys</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nf">parse</span><span class="p">(</span><span class="nx">event</span><span class="p">.</span><span class="nx">Details</span><span class="p">.</span><span class="nx">Parameters</span><span class="p">.</span><span class="nx">jsonString</span><span class="p">),</span> <span class="dl">"</span><span class="s2">module_setting_</span><span class="dl">"</span><span class="p">);</span>
 <span class="p">};</span>
 
-<span class="kd">function</span> <span class="nx">addPrefixToKeys</span><span class="p">(</span><span class="nx">jsonObject</span><span class="p">,</span> <span class="nx">prefix</span><span class="p">)</span> <span class="p">{</span>
+<span class="kd">function</span> <span class="nf">addPrefixToKeys</span><span class="p">(</span><span class="nx">jsonObject</span><span class="p">,</span> <span class="nx">prefix</span><span class="p">)</span> <span class="p">{</span>
   <span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">{};</span>
 
-  <span class="k">for</span> <span class="p">(</span><span class="kd">const</span> <span class="nx">key</span> <span class="k">in</span> <span class="nx">jsonObject</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">jsonObject</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">key</span><span class="p">))</span> <span class="p">{</span>
+  <span class="k">for </span><span class="p">(</span><span class="kd">const</span> <span class="nx">key</span> <span class="k">in</span> <span class="nx">jsonObject</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if </span><span class="p">(</span><span class="nx">jsonObject</span><span class="p">.</span><span class="nf">hasOwnProperty</span><span class="p">(</span><span class="nx">key</span><span class="p">))</span> <span class="p">{</span>
       <span class="kd">const</span> <span class="nx">newKey</span> <span class="o">=</span> <span class="s2">`</span><span class="p">${</span><span class="nx">prefix</span><span class="p">}${</span><span class="nx">key</span><span class="p">}</span><span class="s2">`</span><span class="p">;</span>
       <span class="nx">result</span><span class="p">[</span><span class="nx">newKey</span><span class="p">]</span> <span class="o">=</span> <span class="nx">jsonObject</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
     <span class="p">}</span>
