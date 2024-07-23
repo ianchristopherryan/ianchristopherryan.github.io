@@ -317,21 +317,21 @@
 
 <h2 id="introduction">Introduction</h2>
 
-<p>In this blog post we are going to discuss how to build a Genertive AI based email spam filter. Not only will we discuss this but we will also talk about how to evaluate the performance of Generative AI solutions before you invest the time in acctually building them.</p>
+<p>In this blog post we are going to discuss how to build a Generative AI based email spam filter. Not only will we discuss this but we will also talk about how to evaluate the performance of Generative AI solutions before you invest the time in actually building them.</p>
 
-<p>As I think we have all seen there is a massive increase in the number of spam and phishing attacks, not only is there an increase but there is also an increasing sophistication in the way that the attacks are being presented. While there are curernt methods avaialbe to try and mitigate the number of spam or phishing messages that people see, these methods are starting to fail.</p>
+<p>As I think we have all seen there is a massive increase in the number of spam and phishing attacks, not only is there an increase but there is also an increasing sophistication in the way that the attacks are being presented. While there are current methods available to try and mitigate the number of spam or phishing messages that people see, these methods are starting to fail.</p>
 
-<p>The spammers are evloving at a faster or at the least a similar rate to the methods in place that are blocking them. In general most of the existing methods to block spam have been based around Machine Learning. This involves training up large models using large datasets to try and identify Spam. Although these methods have been relatively effective up until recent times, advancements in spam and the sheer volume of spam have made them less effective.</p>
+<p>The spammers are evolving at a faster or at the least a similar rate to the methods in place that are blocking them. In general most of the existing methods to block spam have been based around Machine Learning. This involves training up large models using large datasets to try and identify Spam. Although these methods have been relatively effective up until recent times, advancements in spam and the sheer volume of spam have made them less effective.</p>
 
-<p>The general issue with large ML models is that they require constant updates. This never ending training and a need for new data makes them hard and expensive to maintain. Existing email providers have tried to mitigate these costs by essentially getting their users to label the spam for them, this has allowed them to build massive datasets of labeled data that they can then use to further train their ML models. This is becoming overly complex and suseptible to inaccuracies. If users mis-label spam messages the models actually become worse.</p>
+<p>The general issue with large ML models is that they require constant updates. This never ending training and a need for new data makes them hard and expensive to maintain. Existing email providers have tried to mitigate these costs by essentially getting their users to label the spam for them, this has allowed them to build massive datasets of labeled data that they can then use to further train their ML models. This is becoming overly complex and susceptible to inaccuracies. If users mis-label spam messages the models actually become worse.</p>
 
-<p>Since these ML models have started to become less efficient, there has been a push to move to more manual methods to mitigate the spam and phishing attacks. Often companies will spend large amounts of money in training programs to try and teach their staff to identify spam and phishing methods. Although this does has its place in the security posture of a company, it is not an ideal solution to handle spam. The ideal solution is to make sure that spam and phishing never reaches the users in the first place.</p>
+<p>Since these ML models have started to become less efficient, there has been a push to move to more manual methods to mitigate the spam and phishing attacks. Often companies will spend large amounts of money in training programs to try and teach their staff to identify spam and phishing methods. Although this does have its place in the security posture of a company, it is not an ideal solution to handle spam. The ideal solution is to make sure that spam and phishing never reaches the users in the first place.</p>
 
 <p>So how do we fix this?</p>
 
-<p>Well we are proposing that using a Generative AI based solution could alleiviate many of these issues.</p>
+<p>Well we are proposing that using a Generative AI based solution could alleviate many of these issues.</p>
 
-<p>The biggest advantage of using a GenAI solution is that there is absolutely no training required. Because the solution is relying on the AI understanding the concept of spam rather than the very binary notion of spam/not spam we can achive a very advanced model without the significant costs associated with training a complex traditional ML model.</p>
+<p>The biggest advantage of using a GenAI solution is that there is absolutely no training required. Because the solution is relying on the AI understanding the concept of spam rather than the very binary notion of spam/not spam we can achieve a very advanced model without the significant costs associated with training a complex traditional ML model.</p>
 
 <p>However, we should evaluate this assumption and perform some testing to see how a GenAI solution would actually perform.</p>
 
@@ -370,7 +370,7 @@ Finally the F1 Score is a single metric that balances both precision and recall.
 
 <h2 id="amazon-bedrock-automatic-evaluation">Amazon Bedrock automatic evaluation</h2>
 
-<p>To setup an evaluation job in Amazon Bedrok once we have our dataset is quite straight forward. We want to perform an automated evaluation.</p>
+<p>To setup an evaluation job in Amazon Bedrock once we have our dataset is quite straight forward. We want to perform an automated evaluation.</p>
 
 <figure>
   <!--<a href="" target="">-->
@@ -382,7 +382,7 @@ Finally the F1 Score is a single metric that balances both precision and recall.
   </figcaption>
 </figure>
 
-<p>To create an evaulation job, you initially need to give it a name:</p>
+<p>To create an evaluation job, you initially need to give it a name:</p>
 
 <figure>
   <!--<a href="" target="">-->
@@ -406,7 +406,7 @@ Finally the F1 Score is a single metric that balances both precision and recall.
   </figcaption>
 </figure>
 
-<p>We specify our source dataset, which contains all of the prompts that will be evlautated and their expected responses. We also need to specify a results bucket to store all of the evaluation results.</p>
+<p>We specify our source dataset, which contains all of the prompts that will be evaluated and their expected responses. We also need to specify a results bucket to store all of the evaluation results.</p>
 
 <p>After entering these details we can execute our job.</p>
 
@@ -462,7 +462,7 @@ Finally the F1 Score is a single metric that balances both precision and recall.
   </figcaption>
 </figure>
 
-<p>What we need to configure is initiall a domain name in Route53, this will allow us to setup both SES and WorkMail. I wont go into detail about this here, it is assumed that you have a domain setup and ready to use.</p>
+<p>What we need to configure is initial a domain name in Route53, this will allow us to setup both SES and WorkMail. I wont go into detail about this here, it is assumed that you have a domain setup and ready to use.</p>
 
 <h2 id="configuring-ses-for-delivery-to-s3">Configuring SES for delivery to S3</h2>
 
@@ -518,7 +518,7 @@ Finally the F1 Score is a single metric that balances both precision and recall.
 
 <h2 id="configuring-workmail">Configuring WorkMail</h2>
 
-<p>WorkMail is a managed business email service in AWS. We are going to use this as it is a convenient way to demonstrate this solution. Of course if we were deploying this solution in a production environment we would most likely be integrating with existing email providers. The scope of that change is beyond this blog post, but can be relativel easily implemented.</p>
+<p>WorkMail is a managed business email service in AWS. We are going to use this as it is a convenient way to demonstrate this solution. Of course if we were deploying this solution in a production environment we would most likely be integrating with existing email providers. The scope of that change is beyond this blog post, but can be relatively easily implemented.</p>
 
 <p>The initial configuration and setup of WorkMail is very simple, we just need to specify our domain name that was setup in Route53 and click create. This will give us our organisation in WorkMail, and only takes a couple of minutes to provision.</p>
 
@@ -653,7 +653,7 @@ Finally the F1 Score is a single metric that balances both precision and recall.
 
 <p>In this function we are going to first retrieve the full content of the email message, this is because we need the full body to assess if this is a spam message. The headers also contain useful information that can help our model decide if this is spam or not as it will be able to recognise things such as DKIM and SPF from the headers.</p>
 
-<p>When we have the full original content of the email, we construct out prompt (the same as we used in the training set) and then then call our high performing model within Bedrock.</p>
+<p>When we have the full original content of the email, we construct our prompt (the same as we used in the training set) and then then call our high performing model within Bedrock.</p>
 
 <p>The result of this call then decides whether we respond with a bounce action or with a default/deliver action.</p>
 
@@ -661,7 +661,7 @@ Finally the F1 Score is a single metric that balances both precision and recall.
 
 <h2 id="final-thoughts">Final thoughts</h2>
 
-<p>So this worked really well, even in practice it was reliably blocking and filtering out spam and phishing emails. I was quite surprised by this, as often these GenAI POCs perform reasonably well, but this one performed extremely well. I would say that if this was implemented in a production way it would add a useful layer of security to any company, taking some of the load off the expectiaon of staff to identify and react to spam and phishing.</p>
+<p>So this worked really well, even in practice it was reliably blocking and filtering out spam and phishing emails. I was quite surprised by this, as often these GenAI POCs perform reasonably well, but this one performed extremely well. I would say that if this was implemented in a production way it would add a useful layer of security to any company, taking some of the load off the expectation of staff to identify and react to spam and phishing.</p>
 
 </div>
         
@@ -726,11 +726,6 @@ Finally the F1 Score is a single metric that balances both precision and recall.
 <script type="text/javascript" src="/assets/js/hamburger.js"></script>
 <script type="text/javascript" src="/assets/js/darkModeSwitch.js"></script>
 
-
-  
-  
-    
-  
 
 
 </body>
