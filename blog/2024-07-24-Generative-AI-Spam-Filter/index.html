@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta content="ie=edge" http-equiv="x-ua-compatible">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+
+    <title>Generative AI Email Spam Filter - Ian Ryan</title>
+
+
+  <meta name="description" content="This blog post discusses in depth how a generative AI spam filter can be implemented and its accuracy at detecting spam and phishing emails."/>
+
+
+
+
+
+
+  <meta property="og:image" content="/assets/images/blog/20240724/SpamAI.jpg"/>
+
+
+
+
+
+
+
+    <link rel="icon" href="/assets/images/favicon/favicon.png">
+    <link href="/assets/css/main.css" rel="stylesheet">
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Mono&family=Merriweather:wght@300;400;700&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    
+      <script>
+          localStorage.getItem('darkMode') === 'true' && document.documentElement.setAttribute('data-mode', 'dark');
+      </script>
+    
+
+  </head>
+<body class="page page-post page-post-1 has-static-header">
+
+
+<div class="menu-main-mobile " id="menu-main-mobile">
+  
+  <div class="menu-main-mobile-top">
+    <div id="close-overlay" class="menu-main-close">
+      <div class="hamburger"></div>
+    </div>
+  </div>
+
+  <div class="menu-main-mobile-center">
+    
+      <ul class="menu">
+        
+          <li class="menu-item-home">
+            <a href="/">Home</a>
+          </li>
+        
+          <li class="menu-item-blog">
+            <a href="/blog/">Blog</a>
+          </li>
+        
+      </ul>
+    
+  </div>
+
+  <div class="menu-main-mobile-bottom">
+    
+      
+
+<div class="social" id="social">
+  
+  <a href="https://github.com/ianchristopherryan/" target="blank" title="Github">
+    <i class="fab fa-github"></i>
+  </a>
+  
+  <a href="https://www.linkedin.com/in/ian-christopher-ryan/" target="blank" title="Linkedin">
+    <i class="fab fa-linkedin"></i>
+  </a>
+  
+  <a href="https://www.youtube.com/@ianchristopherryan" target="blank" title="YouTube">
+    <i class="fab fa-youtube"></i>
+  </a>
+  
+</div>
+
+
+    
+    
+  </div>
+
+</div>
+
+
+
+
+<div id="header" class='header '>
+  <div class="container">
+    <div class="logos">
+  <div class="logo logo-desktop">
+    
+  
+    
+      <div class="logo-text"><a href="/">Ian Christopher Ryan</a></div>
+    
+    
+  </div>
+
+  <div class="logo logo-desktop-invert">
+    
+    
+  
+    
+      <div class="logo-text"><a href="/">Ian Christopher Ryan</a></div>
+    
+    
+  </div>
+
+  <div class="logo logo-mobile">
+    
+    
+  
+    
+      <div class="logo-text"><a href="/">Ian Christopher Ryan</a></div>
+    
+    
+  </div>
+
+
+  <div class="logo logo-mobile-invert">
+    
+    
+  
+    
+      <div class="logo-text"><a href="/">Ian Christopher Ryan</a></div>
+    
+
+  </div>
+
+</div>
+
+
+    <div class="menu-main">
+  <ul>
+    
+      
+        
+        <li class="">
+          <a href="/">Home</a>
+        </li>
+      
+    
+      
+        
+        <li class="">
+          <a href="/blog/">Blog</a>
+        </li>
+      
+    
+  </ul>
+</div>
+
+    
+      <div class="dark-mode-switcher " id="dark-mode-container">
+  <div class="dark-mode-switch">
+    <svg class="dark-mode-icon-dark" data-name="Layer 1" fill="#000000" height="20px" viewbox="0 0 64 64" width="20px" x="0px" xmlns="http://www.w3.org/2000/svg" y="0px">
+      <title>essential</title>
+      <path d="M33.28,58.24A26.95,26.95,0,0,1,24,6l.39-.13a2,2,0,0,1,2.4,2.87,22.42,22.42,0,0,0-1.51,18.75h0A22.47,22.47,0,0,0,54.09,40.8l.76-.3a2,2,0,0,1,2.24.48,2,2,0,0,1,.35,2.24,27,27,0,0,1-24.16,15ZM21.11,11.85a22.94,22.94,0,1,0,30,33.91A26.46,26.46,0,0,1,21.53,28.87h0A26.4,26.4,0,0,1,21.11,11.85Z"></path>
+    </svg>
+    <svg class="dark-mode-icon-light" fill="#000000" height="20px" style="enable-background: new 0 0 100 100;" version="1.1" viewbox="0 0 100 100" width="20px" x="0px" xml:space="preserve" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" y="0px">
+      <g>
+        <path d="M50,75c-13.8,0-25-11.2-25-25s11.2-25,25-25s25,11.2,25,25S63.8,75,50,75z M50,33.3c-9.2,0-16.7,7.5-16.7,16.7   c0,9.2,7.5,16.7,16.7,16.7c9.2,0,16.7-7.5,16.7-16.7C66.7,40.8,59.2,33.3,50,33.3z"></path>
+      </g>
+      <g>
+        <path d="M50,100c-2.3,0-4.2-1.9-4.2-4.2v-8.3c0-2.3,1.9-4.2,4.2-4.2c2.3,0,4.2,1.9,4.2,4.2v8.3C54.2,98.1,52.3,100,50,100z    M17.5,86.7c-1.1,0-2.1-0.4-2.9-1.2c-1.6-1.6-1.6-4.3,0-5.9l5.8-5.8c1.6-1.6,4.3-1.6,5.9,0c1.6,1.6,1.6,4.3,0,5.9l-5.8,5.8   C19.6,86.3,18.6,86.7,17.5,86.7z M82.5,86.7c-1.1,0-2.1-0.4-2.9-1.2l-5.8-5.8c-1.6-1.6-1.6-4.3,0-5.9s4.3-1.6,5.9,0l5.8,5.8   c1.6,1.6,1.6,4.3,0,5.9C84.6,86.3,83.6,86.7,82.5,86.7z M95.8,54.2h-8.3c-2.3,0-4.2-1.9-4.2-4.2c0-2.3,1.9-4.2,4.2-4.2h8.3   c2.3,0,4.2,1.9,4.2,4.2C100,52.3,98.1,54.2,95.8,54.2z M12.5,54.2H4.2C1.9,54.2,0,52.3,0,50c0-2.3,1.9-4.2,4.2-4.2h8.3   c2.3,0,4.2,1.9,4.2,4.2C16.7,52.3,14.8,54.2,12.5,54.2z M76.7,27.5c-1.1,0-2.1-0.4-2.9-1.2c-1.6-1.6-1.6-4.3,0-5.9l5.8-5.8   c1.6-1.6,4.3-1.6,5.9,0c1.6,1.6,1.6,4.3,0,5.9l-5.8,5.8C78.8,27.1,77.7,27.5,76.7,27.5z M23.3,27.5c-1.1,0-2.1-0.4-2.9-1.2   l-5.8-5.8c-1.6-1.6-1.6-4.3,0-5.9c1.6-1.6,4.3-1.6,5.9,0l5.8,5.8c1.6,1.6,1.6,4.3,0,5.9C25.5,27.1,24.4,27.5,23.3,27.5z M50,16.7   c-2.3,0-4.2-1.9-4.2-4.2V4.2C45.8,1.9,47.7,0,50,0c2.3,0,4.2,1.9,4.2,4.2v8.3C54.2,14.8,52.3,16.7,50,16.7z"></path>
+      </g>
+    </svg>
+    <div class="ball"></div>
+  </div>
+</div>
+    
+    <div class="hamburger-trigger" id="toggle-menu-main-mobile">
+  <button class="hamburger">Menu</button>
+</div>
+  </div>
+</div>
+
+<div id="wrapper" class="wrapper">     
+  <div class="section">
+  <div class="container post-header">
+
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-8">
+          
+            <div class="post-date">22 July 2024</div>
+          
+          
+          <div class="post-categories">
+          
+
+
+  
+    
+
+
+
+
+<div class="category-link">
+<a href="/category/genai">
+  GenAI
+</a>
+
+</div>
+  
+    
+
+
+
+
+<div class="category-link">
+<a href="/category/llm">
+  LLM
+</a>
+
+</div>
+  
+    
+
+
+
+
+<div class="category-link">
+<a href="/category/ai">
+  AI
+</a>
+
+</div>
+  
+    
+
+
+
+
+<div class="category-link">
+<a href="/category/amazon-bedrock">
+  Amazon Bedrock
+</a>
+
+</div>
+  
+
+          
+          </div>
+          <div class="post-title">
+            <h1>Generative AI Email Spam Filter</h1>
+          </div>
+          
+            <div class="post-description">
+              <p>This blog post discusses in depth how a generative AI spam filter can be implemented and its accuracy at detecting spam and phishing emails.</p>
+            </div>
+          
+
+          
+            <div class="post-authors">
+              
+              
+              
+              
+
+
+
+
+<div class="author">
+  
+    <div class="author-image">
+      <img src="/assets/images/team/ianryan.jpeg" alt="Ian Ryan"/>
+    </div>
+  
+
+  
+    <div class="author-content">
+      <div class="author-name">Ian Ryan</div>
+      
+        <div class="author-job">AWS Architect</div>
+      
+    </div>
+  
+</div>
+              
+            </div>
+          
+
+      </div>
+    </div>
+          
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-8">
+        
+          <div class="post-image">
+            <img src="/assets/images/blog/20240724/SpamAI.jpg" alt="Generative AI Email Spam Filter" />
+          </div>
+        
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section pt-0">
+  <div class="container">
+    <div class="row justify-content-center">
+
+      <div class="col-12 col-lg-8">
+        <div class="content"><h1 id="enhancing-email-security-with-ai-powered-spam-detection">Enhancing Email Security with AI-Powered Spam Detection</h1>
+
+<h2 id="demo-video">Demo video</h2>
+
+<p><a href="https://youtu.be/qI0MsASW34s" target="_blank">Click here for a discussion and demo of this Generative AI Email Spam Filter on my channel on YouTube</a></p>
+
+<h2 id="introduction">Introduction</h2>
+
+<p>In this blog post we are going to discuss how to build a Genertive AI based email spam filter. Not only will we discuss this but we will also talk about how to evaluate the performance of Generative AI solutions before you invest the time in acctually building them.</p>
+
+<p>As I think we have all seen there is a massive increase in the number of spam and phishing attacks, not only is there an increase but there is also an increasing sophistication in the way that the attacks are being presented. While there are curernt methods avaialbe to try and mitigate the number of spam or phishing messages that people see, these methods are starting to fail.</p>
+
+<p>The spammers are evloving at a faster or at the least a similar rate to the methods in place that are blocking them. In general most of the existing methods to block spam have been based around Machine Learning. This involves training up large models using large datasets to try and identify Spam. Although these methods have been relatively effective up until recent times, advancements in spam and the sheer volume of spam have made them less effective.</p>
+
+<p>The general issue with large ML models is that they require constant updates. This never ending training and a need for new data makes them hard and expensive to maintain. Existing email providers have tried to mitigate these costs by essentially getting their users to label the spam for them, this has allowed them to build massive datasets of labeled data that they can then use to further train their ML models. This is becoming overly complex and suseptible to inaccuracies. If users mis-label spam messages the models actually become worse.</p>
+
+<p>Since these ML models have started to become less efficient, there has been a push to move to more manual methods to mitigate the spam and phishing attacks. Often companies will spend large amounts of money in training programs to try and teach their staff to identify spam and phishing methods. Although this does has its place in the security posture of a company, it is not an ideal solution to handle spam. The ideal solution is to make sure that spam and phishing never reaches the users in the first place.</p>
+
+<p>So how do we fix this?</p>
+
+<p>Well we are proposing that using a Generative AI based solution could alleiviate many of these issues.</p>
+
+<p>The biggest advantage of using a GenAI solution is that there is absolutely no training required. Because the solution is relying on the AI understanding the concept of spam rather than the very binary notion of spam/not spam we can achive a very advanced model without the significant costs associated with training a complex traditional ML model.</p>
+
+<p>However, we should evaluate this assumption and perform some testing to see how a GenAI solution would actually perform.</p>
+
+<h2 id="evaluation">Evaluation</h2>
+
+<p>To evaluate the performance of any ML model we usually want to get some statistics about how the model will perform against a large dataset. We are looking to find out the precision, recall, accuracy and F1 score of our model.</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20240724/Confusion-matrix-Precision-Recall-Accuracy-and-F1-score.png" alt="" />
+  <!--</a>-->
+  <figcaption>
+    <h4></h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>The Precision can be described as, how many of the emails classified as spam are actually spam.
+The Recall is how well our model can identify spam emails.
+The Accuracy is the overall measure of the model’s performance.
+Finally the F1 Score is a single metric that balances both precision and recall.</p>
+
+<p>To get these metrics we are in luck, there is an evaluation tool built in to Amazon Bedrock. This allows us to configure an automatic evaluation of our GenAI models.</p>
+
+<h2 id="building-the-dataset">Building the dataset</h2>
+
+<p>To run this evaluation in Amazon Bedrock we need a dataset, the dataset that Amazon Bedrock expects is in a JSON line format and each line will consist of a prompt such as this:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+   </span><span class="nl">"prompt"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Evaluate if this email content is likely to be spam. Provide a boolean response, where 'true' is a spam email. Respond with a SINGLE WORD, either 'true' or 'false'. Do not provide any other information.</span><span class="se">\n\n</span><span class="s2">The content is:</span><span class="se">\n\n</span><span class="s2">From rssfeeds@jmason.org  Fri Sep 27 10:40:59 2002</span><span class="se">\n</span><span class="s2">Return-Path: &lt;rssfeeds@example.com&gt;</span><span class="se">\n</span><span class="s2">Delivered-To: yyyy@localhost.example.com</span><span class="se">\n</span><span class="s2">Received: from localhost (jalapeno [127.0.0.1])</span><span class="se">\n\t</span><span class="s2">by jmason.org (Postfix) with ESMTP id 8B3FB16F16</span><span class="se">\n\t</span><span class="s2">for &lt;jm@localhost&gt;; Fri, 27 Sep 2002 10:40:59 +0100 (IST)</span><span class="se">\n</span><span class="s2">Received: from jalapeno [127.0.0.1]</span><span class="se">\n\t</span><span class="s2">by localhost with IMAP (fetchmail-5.9.0)</span><span class="se">\n\t</span><span class="s2">for jm@localhost (single-drop); Fri, 27 Sep 2002 10:40:59 +0100 (IST)</span><span class="se">\n</span><span class="s2">Received: from dogma.slashnull.org (localhost [127.0.0.1]) by</span><span class="se">\n</span><span class="s2">    dogma.slashnull.org (8.11.6/8.11.6) with ESMTP id g8R80xg00774 for</span><span class="se">\n</span><span class="s2">    &lt;jm@jmason.org&gt;; Fri, 27 Sep 2002 09:00:59 +0100</span><span class="se">\n</span><span class="s2">Message-Id: &lt;200209270800.g8R80xg00774@dogma.slashnull.org&gt;</span><span class="se">\n</span><span class="s2">To: yyyy@example.com</span><span class="se">\n</span><span class="s2">From: fark &lt;rssfeeds@example.com&gt;</span><span class="se">\n</span><span class="s2">Subject: Skateboarder drives-through Subway. With his face</span><span class="se">\n</span><span class="s2">Date: Fri, 27 Sep 2002 08:00:59 -0000</span><span class="se">\n</span><span class="s2">Content-Type: text/plain; encoding=utf-8</span><span class="se">\n</span><span class="s2">X-Spam-Status: No, hits=-292.7 required=5.0</span><span class="se">\n\t</span><span class="s2">tests=AWL,T_URI_COUNT_0_1</span><span class="se">\n\t</span><span class="s2">version=2.50-cvs</span><span class="se">\n</span><span class="s2">X-Spam-Level: </span><span class="se">\n\n</span><span class="s2">URL: http://www.newsisfree.com/click/-5,8296987,1717/</span><span class="se">\n</span><span class="s2">Date: 2002-09-27T02:45:51+01:00</span><span class="se">\n\n</span><span class="s2">(DeKalb Daily Chronicle)</span><span class="se">\n\n\n</span><span class="s2">"</span><span class="p">,</span><span class="w"> 
+   </span><span class="nl">"referenceResponse"</span><span class="p">:</span><span class="w"> </span><span class="s2">"false"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>This example here is taken from an old dataset of existing spam messages, shown for illustration purposes in this blog post as a more recent spam message is often much larger due to the amount of html and embedded images etc. This however raises a good point, to get our accurate response we have to make sure we are using a large amount of varied datasets to build our test set. It is also worth including a large number of modern email spam messages that have been flagged by our existing providers. It is also extremely useful to get the spam messages that were missed by modern email providers as this is really useful for testing our solution.</p>
+
+<h2 id="amazon-bedrock-automatic-evaluation">Amazon Bedrock automatic evaluation</h2>
+
+<p>To setup an evaluation job in Amazon Bedrok once we have our dataset is quite straight forward. We want to perform an automated evaluation.</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20240724/eval1.png" alt="" />
+  <!--</a>-->
+  <figcaption>
+    <h4></h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>To create an evaulation job, you initially need to give it a name:</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20240724/eval2.png" alt="" />
+  <!--</a>-->
+  <figcaption>
+    <h4></h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>Then you select your model and the type of evaluation. We want to use a question and answer type as we will have a prompt that essentially says “Is this spam?” and we expect a yes or no response as our answer.</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20240724/eval3.png" alt="" />
+  <!--</a>-->
+  <figcaption>
+    <h4></h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>We specify our source dataset, which contains all of the prompts that will be evlautated and their expected responses. We also need to specify a results bucket to store all of the evaluation results.</p>
+
+<p>After entering these details we can execute our job.</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20240724/eval4.png" alt="" />
+  <!--</a>-->
+  <figcaption>
+    <h4></h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>After a fairly long time depending on the size of your dataset (think up to hours not minutes), the job will complete and you can view all of the results.</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20240724/eval5.png" alt="" />
+  <!--</a>-->
+  <figcaption>
+    <h4></h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>For a question and answer type of evaluation, using the Accuracy metric, we will get an F1 score directly.</p>
+
+<p>The results for two different models that we evaluated are below.</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20240724/results.png" alt="" />
+  <!--</a>-->
+  <figcaption>
+    <h4></h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>Surprisingly we are seeing that we are getting extremely high scores, this is indicating that the model is performing excellently when detecting spam. Unsurprisingly the faster and cheaper model is not performing as well.</p>
+
+<h2 id="building-a-full-solution-in-aws">Building a full solution in AWS</h2>
+
+<p>We can now build a full end to end solution in AWS. The architecture we are going to build is as follows.</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20240724/Architecture.png" alt="" />
+  <!--</a>-->
+  <figcaption>
+    <h4></h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>What we need to configure is initiall a domain name in Route53, this will allow us to setup both SES and WorkMail. I wont go into detail about this here, it is assumed that you have a domain setup and ready to use.</p>
+
+<h2 id="configuring-ses-for-delivery-to-s3">Configuring SES for delivery to S3</h2>
+
+<p>We will first configure SES to deliver all received emails to S3. This is good practice as we will retain all email messages even if they are later discarded by out spam filter solution. We may also in the future want to add a way for a user to retrieve an email that was incorrectly flagged as spam.</p>
+
+<p>As we are configuring email receiving, first we need to create a rule set.</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20240724/ses1.png" alt="" />
+  <!--</a>-->
+  <figcaption>
+    <h4></h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>Then within our ruleset we create rules.</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20240724/ses2.png" alt="" />
+  <!--</a>-->
+  <figcaption>
+    <h4></h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>The rule that we want to create is to deliver any received messages to S3.</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20240724/ses3.png" alt="" />
+  <!--</a>-->
+  <figcaption>
+    <h4></h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>Once this is setup all emails received will now end up in our bucket in S3.</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20240724/s3-email.png" alt="" />
+  <!--</a>-->
+  <figcaption>
+    <h4></h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<h2 id="configuring-workmail">Configuring WorkMail</h2>
+
+<p>WorkMail is a managed business email service in AWS. We are going to use this as it is a convenient way to demonstrate this solution. Of course if we were deploying this solution in a production environment we would most likely be integrating with existing email providers. The scope of that change is beyond this blog post, but can be relativel easily implemented.</p>
+
+<p>The initial configuration and setup of WorkMail is very simple, we just need to specify our domain name that was setup in Route53 and click create. This will give us our organisation in WorkMail, and only takes a couple of minutes to provision.</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20240724/workmail-org.png" alt="" />
+  <!--</a>-->
+  <figcaption>
+    <h4></h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>When it is complete we will have access to an awsapps url that we can use to login to our new workmail solution.</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20240724/workmail-gui.png" alt="" />
+  <!--</a>-->
+  <figcaption>
+    <h4></h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<h2 id="workmail-inbound-rules">WorkMail inbound rules</h2>
+
+<p>We now need to create an inbound rule in workmail. This is so that we can intercept any incoming messages and execute a lambda function to assess if they are spam.</p>
+
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20240724/workmail-rule.png" alt="" />
+  <!--</a>-->
+  <figcaption>
+    <h4></h4>
+    <p></p>
+  </figcaption>
+</figure>
+
+<p>The function that we are going to execute is the spamfilter Lambda function that we have built. This will be executed in a synchronous manner, which means that workmail will wait for the Lambda function to return with an action before delivering the email. This allows us to either bounce or deliver the message.</p>
+
+<h2 id="spam-filter-lambda-with-bedrock">Spam Filter Lambda with Bedrock</h2>
+
+<p>Finally in our solution we need the Lambda function that will actually call bedrock and evaluate if the received message is spam. The code for this is below.</p>
+
+<div class="language-py highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">boto3</span> 
+<span class="kn">import</span> <span class="n">json</span> 
+<span class="kn">import</span> <span class="n">email</span>
+<span class="kn">import</span> <span class="n">os</span>
+<span class="kn">import</span> <span class="n">logging</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="p">.</span><span class="nf">getLogger</span><span class="p">()</span>
+<span class="n">logger</span><span class="p">.</span><span class="nf">setLevel</span><span class="p">(</span><span class="sh">"</span><span class="s">INFO</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="c1"># Initialize Boto3 clients
+</span><span class="n">workmail</span> <span class="o">=</span> <span class="n">boto3</span><span class="p">.</span><span class="nf">client</span><span class="p">(</span><span class="n">service_name</span><span class="o">=</span><span class="sh">'</span><span class="s">workmailmessageflow</span><span class="sh">'</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="sh">'</span><span class="s">us-east-1</span><span class="sh">'</span><span class="p">)</span>
+<span class="n">bedrock_runtime</span> <span class="o">=</span> <span class="n">boto3</span><span class="p">.</span><span class="nf">client</span><span class="p">(</span><span class="n">service_name</span><span class="o">=</span><span class="sh">'</span><span class="s">bedrock-runtime</span><span class="sh">'</span><span class="p">,</span> <span class="n">region_name</span><span class="o">=</span><span class="sh">'</span><span class="s">us-east-1</span><span class="sh">'</span><span class="p">)</span> 
+
+<span class="k">def</span> <span class="nf">lambda_handler</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+    <span class="n">logger</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="sh">'</span><span class="s">Spam filter</span><span class="sh">'</span><span class="p">)</span>
+    <span class="n">logger</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+    
+    <span class="c1"># Extract the WorkMail message ID from the event
+</span>    <span class="n">message_id</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="sh">'</span><span class="s">messageId</span><span class="sh">'</span><span class="p">]</span>
+    <span class="n">raw_msg</span> <span class="o">=</span> <span class="n">workmail</span><span class="p">.</span><span class="nf">get_raw_message_content</span><span class="p">(</span><span class="n">messageId</span><span class="o">=</span><span class="n">message_id</span><span class="p">)</span>
+    <span class="n">parsed_msg</span> <span class="o">=</span> <span class="n">email</span><span class="p">.</span><span class="nf">message_from_bytes</span><span class="p">(</span><span class="n">raw_msg</span><span class="p">[</span><span class="sh">'</span><span class="s">messageContent</span><span class="sh">'</span><span class="p">].</span><span class="nf">read</span><span class="p">())</span>
+    
+    <span class="c1"># Convert the parsed email message to a string
+</span>    <span class="n">email_string</span> <span class="o">=</span> <span class="n">parsed_msg</span><span class="p">.</span><span class="nf">as_string</span><span class="p">()</span>
+    <span class="n">logger</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="n">email_string</span><span class="p">)</span>
+    
+    <span class="c1"># Evaluate the email content
+</span>    <span class="n">is_spam</span> <span class="o">=</span> <span class="nf">evaluate_email</span><span class="p">(</span><span class="n">email_string</span><span class="p">)</span>
+    
+    <span class="c1"># Generate the response based on the evaluation result
+</span>    <span class="k">if</span> <span class="n">is_spam</span><span class="p">:</span>
+        <span class="n">logger</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="sh">"</span><span class="s">Email is identified as spam.</span><span class="sh">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="sh">"</span><span class="s">actions</span><span class="sh">"</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="sh">"</span><span class="s">action</span><span class="sh">"</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="sh">"</span><span class="s">type</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">BOUNCE</span><span class="sh">"</span><span class="p">,</span>
+                        <span class="sh">"</span><span class="s">parameters</span><span class="sh">"</span><span class="p">:</span> <span class="p">{</span>
+                            <span class="sh">"</span><span class="s">bounceMessage</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">Email is undeliverable due to company policy.</span><span class="sh">"</span>
+                        <span class="p">}</span>
+                    <span class="p">},</span>
+                    <span class="sh">"</span><span class="s">allRecipients</span><span class="sh">"</span><span class="p">:</span> <span class="bp">True</span>
+                <span class="p">}</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="sh">"</span><span class="s">Email is not identified as spam.</span><span class="sh">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="sh">"</span><span class="s">actions</span><span class="sh">"</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="sh">"</span><span class="s">action</span><span class="sh">"</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="sh">"</span><span class="s">type</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">DEFAULT</span><span class="sh">"</span>
+                    <span class="p">},</span>
+                    <span class="sh">"</span><span class="s">allRecipients</span><span class="sh">"</span><span class="p">:</span> <span class="bp">True</span>
+                <span class="p">}</span>
+            <span class="p">]</span>
+        <span class="p">}</span>
+
+<span class="c1"># Function to evaluate if an email is spam
+</span><span class="k">def</span> <span class="nf">evaluate_email</span><span class="p">(</span><span class="n">content</span><span class="p">):</span>
+    <span class="n">prompt</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="sh">"</span><span class="s">Evaluate if this email content is likely to be spam. Provide a boolean response, where </span><span class="sh">'</span><span class="s">true</span><span class="sh">'</span><span class="s"> is a spam email. </span><span class="sh">"</span>
+        <span class="sh">"</span><span class="s">Respond with a SINGLE WORD, either </span><span class="sh">'</span><span class="s">true</span><span class="sh">'</span><span class="s"> or </span><span class="sh">'</span><span class="s">false</span><span class="sh">'</span><span class="s">. Do not provide any other information.</span><span class="se">\n\n</span><span class="s">The content is:</span><span class="se">\n\n</span><span class="sh">"</span> 
+        <span class="o">+</span> <span class="n">content</span> 
+    <span class="p">)</span>
+    
+    <span class="n">body</span> <span class="o">=</span> <span class="n">json</span><span class="p">.</span><span class="nf">dumps</span><span class="p">({</span> 
+        <span class="sh">"</span><span class="s">prompt</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="se">\n\n</span><span class="s">Human:</span><span class="sh">"</span> <span class="o">+</span> <span class="n">prompt</span> <span class="o">+</span> <span class="sh">"</span><span class="s"> </span><span class="sh">"</span> <span class="o">+</span> <span class="sh">"</span><span class="se">\n\n</span><span class="s">Assistant:</span><span class="sh">"</span><span class="p">,</span> 
+        <span class="sh">"</span><span class="s">max_tokens_to_sample</span><span class="sh">"</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span> 
+        <span class="sh">"</span><span class="s">temperature</span><span class="sh">"</span><span class="p">:</span> <span class="mf">0.9</span><span class="p">,</span> 
+        <span class="sh">"</span><span class="s">top_k</span><span class="sh">"</span><span class="p">:</span> <span class="mi">250</span><span class="p">,</span> 
+        <span class="sh">"</span><span class="s">top_p</span><span class="sh">"</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> 
+        <span class="sh">"</span><span class="s">stop_sequences</span><span class="sh">"</span><span class="p">:</span> <span class="p">[</span><span class="sh">"</span><span class="se">\n\n</span><span class="s">Human:</span><span class="sh">"</span><span class="p">],</span> 
+        <span class="sh">"</span><span class="s">anthropic_version</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">bedrock-2023-05-31</span><span class="sh">"</span> 
+    <span class="p">})</span> 
+    
+    <span class="n">response</span> <span class="o">=</span> <span class="n">bedrock_runtime</span><span class="p">.</span><span class="nf">invoke_model</span><span class="p">(</span><span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">,</span> <span class="n">modelId</span><span class="o">=</span><span class="sh">"</span><span class="s">anthropic.claude-3-5-sonnet-20240620-v1:0</span><span class="sh">"</span><span class="p">)</span> 
+    <span class="n">response_body</span> <span class="o">=</span> <span class="n">json</span><span class="p">.</span><span class="nf">loads</span><span class="p">(</span><span class="n">response</span><span class="p">[</span><span class="sh">'</span><span class="s">body</span><span class="sh">'</span><span class="p">].</span><span class="nf">read</span><span class="p">())</span>
+    
+    <span class="c1"># Log the response from Bedrock
+</span>    <span class="n">logger</span><span class="p">.</span><span class="nf">info</span><span class="p">(</span><span class="sh">"</span><span class="s">Bedrock response: %s</span><span class="sh">"</span><span class="p">,</span> <span class="n">response_body</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="sh">"</span><span class="s">true</span><span class="sh">"</span> <span class="ow">in</span> <span class="n">response_body</span><span class="p">[</span><span class="sh">'</span><span class="s">completion</span><span class="sh">'</span><span class="p">].</span><span class="nf">lower</span><span class="p">()</span>
+
+
+</code></pre></div></div>
+
+<p>In this function we are going to first retrieve the full content of the email message, this is because we need the full body to assess if this is a spam message. The headers also contain useful information that can help our model decide if this is spam or not as it will be able to recognise things such as DKIM and SPF from the headers.</p>
+
+<p>When we have the full original content of the email, we construct out prompt (the same as we used in the training set) and then then call our high performing model within Bedrock.</p>
+
+<p>The result of this call then decides whether we respond with a bounce action or with a default/deliver action.</p>
+
+<p>To see this running in practice, watch the video at the start of this blog post.</p>
+
+<h2 id="final-thoughts">Final thoughts</h2>
+
+<p>So this worked really well, even in practice it was reliably blocking and filtering out spam and phishing emails. I was quite surprised by this, as often these GenAI POCs perform reasonably well, but this one performed extremely well. I would say that if this was implemented in a production way it would add a useful layer of security to any company, taking some of the load off the expectiaon of staff to identify and react to spam and phishing.</p>
+
+</div>
+        
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="bottom">
+  <div class="container relative">
+    <div class="row align-items-center justify-content-between">
+      <div class="col-auto">
+        
+          <div class="menu-bottom">
+  <ul>
+    
+      <li class="menu-item-Privacy Policy">
+        <a href="/privacy-policy/">Privacy Policy</a>
+      </li>
+    
+      <li class="menu-item-Terms and Conditions">
+        <a href="/terms-and-conditions/">Terms and Conditions</a>
+      </li>
+    
+  </ul>
+</div>
+        
+        
+          <div class="copyright">© 2024 Ian Christopher Ryan</div>
+        
+      </div>
+      
+        <div class="col-auto">
+          <div class="dark-mode-switcher " id="dark-mode-container">
+  <div class="dark-mode-switch">
+    <svg class="dark-mode-icon-dark" data-name="Layer 1" fill="#000000" height="20px" viewbox="0 0 64 64" width="20px" x="0px" xmlns="http://www.w3.org/2000/svg" y="0px">
+      <title>essential</title>
+      <path d="M33.28,58.24A26.95,26.95,0,0,1,24,6l.39-.13a2,2,0,0,1,2.4,2.87,22.42,22.42,0,0,0-1.51,18.75h0A22.47,22.47,0,0,0,54.09,40.8l.76-.3a2,2,0,0,1,2.24.48,2,2,0,0,1,.35,2.24,27,27,0,0,1-24.16,15ZM21.11,11.85a22.94,22.94,0,1,0,30,33.91A26.46,26.46,0,0,1,21.53,28.87h0A26.4,26.4,0,0,1,21.11,11.85Z"></path>
+    </svg>
+    <svg class="dark-mode-icon-light" fill="#000000" height="20px" style="enable-background: new 0 0 100 100;" version="1.1" viewbox="0 0 100 100" width="20px" x="0px" xml:space="preserve" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" y="0px">
+      <g>
+        <path d="M50,75c-13.8,0-25-11.2-25-25s11.2-25,25-25s25,11.2,25,25S63.8,75,50,75z M50,33.3c-9.2,0-16.7,7.5-16.7,16.7   c0,9.2,7.5,16.7,16.7,16.7c9.2,0,16.7-7.5,16.7-16.7C66.7,40.8,59.2,33.3,50,33.3z"></path>
+      </g>
+      <g>
+        <path d="M50,100c-2.3,0-4.2-1.9-4.2-4.2v-8.3c0-2.3,1.9-4.2,4.2-4.2c2.3,0,4.2,1.9,4.2,4.2v8.3C54.2,98.1,52.3,100,50,100z    M17.5,86.7c-1.1,0-2.1-0.4-2.9-1.2c-1.6-1.6-1.6-4.3,0-5.9l5.8-5.8c1.6-1.6,4.3-1.6,5.9,0c1.6,1.6,1.6,4.3,0,5.9l-5.8,5.8   C19.6,86.3,18.6,86.7,17.5,86.7z M82.5,86.7c-1.1,0-2.1-0.4-2.9-1.2l-5.8-5.8c-1.6-1.6-1.6-4.3,0-5.9s4.3-1.6,5.9,0l5.8,5.8   c1.6,1.6,1.6,4.3,0,5.9C84.6,86.3,83.6,86.7,82.5,86.7z M95.8,54.2h-8.3c-2.3,0-4.2-1.9-4.2-4.2c0-2.3,1.9-4.2,4.2-4.2h8.3   c2.3,0,4.2,1.9,4.2,4.2C100,52.3,98.1,54.2,95.8,54.2z M12.5,54.2H4.2C1.9,54.2,0,52.3,0,50c0-2.3,1.9-4.2,4.2-4.2h8.3   c2.3,0,4.2,1.9,4.2,4.2C16.7,52.3,14.8,54.2,12.5,54.2z M76.7,27.5c-1.1,0-2.1-0.4-2.9-1.2c-1.6-1.6-1.6-4.3,0-5.9l5.8-5.8   c1.6-1.6,4.3-1.6,5.9,0c1.6,1.6,1.6,4.3,0,5.9l-5.8,5.8C78.8,27.1,77.7,27.5,76.7,27.5z M23.3,27.5c-1.1,0-2.1-0.4-2.9-1.2   l-5.8-5.8c-1.6-1.6-1.6-4.3,0-5.9c1.6-1.6,4.3-1.6,5.9,0l5.8,5.8c1.6,1.6,1.6,4.3,0,5.9C25.5,27.1,24.4,27.5,23.3,27.5z M50,16.7   c-2.3,0-4.2-1.9-4.2-4.2V4.2C45.8,1.9,47.7,0,50,0c2.3,0,4.2,1.9,4.2,4.2v8.3C54.2,14.8,52.3,16.7,50,16.7z"></path>
+      </g>
+    </svg>
+    <div class="ball"></div>
+  </div>
+</div>
+        </div>
+      
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript" src="/assets/js/scripts.js"></script>
+
+<script type="text/javascript" src="/assets/js/hamburger.js"></script>
+<script type="text/javascript" src="/assets/js/darkModeSwitch.js"></script>
+
+
+  
+  
+    
+  
+
+
+</body>
+</html>
