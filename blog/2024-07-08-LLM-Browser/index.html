@@ -347,21 +347,21 @@
 
 <p>The front end is a very simple react application that simply has a browser style address bar and a go button. It sends the request to the API Gateway. Its so simple I can actually put the example code in line here (its not very exciting for this POC):</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>import React, { useState } from 'react';
-import './App.css';
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="nx">React</span><span class="p">,</span> <span class="p">{</span> <span class="nx">useState</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">react</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="dl">'</span><span class="s1">./App.css</span><span class="dl">'</span><span class="p">;</span>
 
-function App() {
-  const [url, setUrl] = useState('');
-  const [content, setContent] = useState('');
-  const [loading, setLoading] = useState(false);
+<span class="kd">function</span> <span class="nf">App</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="p">[</span><span class="nx">url</span><span class="p">,</span> <span class="nx">setUrl</span><span class="p">]</span> <span class="o">=</span> <span class="nf">useState</span><span class="p">(</span><span class="dl">''</span><span class="p">);</span>
+  <span class="kd">const</span> <span class="p">[</span><span class="nx">content</span><span class="p">,</span> <span class="nx">setContent</span><span class="p">]</span> <span class="o">=</span> <span class="nf">useState</span><span class="p">(</span><span class="dl">''</span><span class="p">);</span>
+  <span class="kd">const</span> <span class="p">[</span><span class="nx">loading</span><span class="p">,</span> <span class="nx">setLoading</span><span class="p">]</span> <span class="o">=</span> <span class="nf">useState</span><span class="p">(</span><span class="kc">false</span><span class="p">);</span>
 
-  const handleGo = async () =&gt; {
-    setLoading(true);
-    try {
-      const response = await fetch('http://your-api-gw-url, {
-        method: 'POST',
+  <span class="kd">const</span> <span class="nx">handleGo</span> <span class="o">=</span> <span class="k">async </span><span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nf">setLoading</span><span class="p">(</span><span class="kc">true</span><span class="p">);</span>
+    <span class="k">try</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="nx">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">fetch</span><span class="p">(</span><span class="dl">'</span><span class="s1">http://your-api-gw-url, {
+        method: </span><span class="dl">'</span><span class="nx">POST</span><span class="dl">'</span><span class="s1">,
         headers: {
-          'Content-Type': 'application/json',
+          </span><span class="dl">'</span><span class="nx">Content</span><span class="o">-</span><span class="nx">Type</span><span class="dl">'</span><span class="s1">: </span><span class="dl">'</span><span class="nx">application</span><span class="o">/</span><span class="nx">json</span><span class="dl">'</span><span class="s1">,
         },
         body: JSON.stringify({ url }),
       });
@@ -370,11 +370,11 @@ function App() {
         const html = await response.text();
         setContent(html);
       } else {
-        setContent('Error fetching content.');
+        setContent(</span><span class="dl">'</span><span class="nb">Error</span> <span class="nx">fetching</span> <span class="nx">content</span><span class="p">.</span><span class="dl">'</span><span class="s1">);
       }
     } catch (error) {
-      console.error('Error fetching content:', error);
-      setContent('Error fetching content.');
+      console.error(</span><span class="dl">'</span><span class="nb">Error</span> <span class="nx">fetching</span> <span class="na">content</span><span class="p">:</span><span class="dl">'</span><span class="s1">, error);
+      setContent(</span><span class="dl">'</span><span class="nb">Error</span> <span class="nx">fetching</span> <span class="nx">content</span><span class="p">.</span><span class="dl">'</span><span class="s1">);
     } finally {
       setLoading(false);
     }
@@ -406,7 +406,7 @@ function App() {
 }
 
 export default App;
-</code></pre></div></div>
+</span></code></pre></div></div>
 
 <p>The Lambda function will then use puppeteer to fully render the webpage, ads and all, and extracts the raw HTML content. Setting up puppeteer to run within lambda is a blog post in itself, so I would suggest you read one of the many other examples of how to do this as I won’t go into it here.</p>
 
@@ -547,6 +547,11 @@ export default App;
 <script type="text/javascript" src="/assets/js/hamburger.js"></script>
 <script type="text/javascript" src="/assets/js/darkModeSwitch.js"></script>
 
+
+  
+  
+    
+  
 
 
 </body>

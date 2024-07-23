@@ -532,7 +532,7 @@ Finally the F1 Score is a single metric that balances both precision and recall.
   </figcaption>
 </figure>
 
-<p>When it is complete we will have access to an awsapps url that we can use to login to our new workmail solution.</p>
+<p>When it is complete we will have access to an awsapps url that we can use to login to our new WorkMail solution.</p>
 
 <figure>
   <!--<a href="" target="">-->
@@ -546,7 +546,7 @@ Finally the F1 Score is a single metric that balances both precision and recall.
 
 <h2 id="workmail-inbound-rules">WorkMail inbound rules</h2>
 
-<p>We now need to create an inbound rule in workmail. This is so that we can intercept any incoming messages and execute a lambda function to assess if they are spam.</p>
+<p>We now need to create an inbound rule in WorkMail. This is so that we can intercept any incoming messages and execute a lambda function to assess if they are spam.</p>
 
 <figure>
   <!--<a href="" target="">-->
@@ -558,7 +558,7 @@ Finally the F1 Score is a single metric that balances both precision and recall.
   </figcaption>
 </figure>
 
-<p>The function that we are going to execute is the spamfilter Lambda function that we have built. This will be executed in a synchronous manner, which means that workmail will wait for the Lambda function to return with an action before delivering the email. This allows us to either bounce or deliver the message.</p>
+<p>The function that we are going to execute is the spamfilter Lambda function that we have built. This will be executed in a synchronous manner, which means that WorkMail will wait for the Lambda function to return with an action before delivering the email. This allows us to either bounce or deliver the message.</p>
 
 <h2 id="spam-filter-lambda-with-bedrock">Spam Filter Lambda with Bedrock</h2>
 
@@ -661,7 +661,7 @@ Finally the F1 Score is a single metric that balances both precision and recall.
 
 <h2 id="final-thoughts">Final thoughts</h2>
 
-<p>So this worked really well, even in practice it was reliably blocking and filtering out spam and phishing emails. I was quite surprised by this, as often these GenAI POCs perform reasonably well, but this one performed extremely well. I would say that if this was implemented in a production way it would add a useful layer of security to any company, taking some of the load off the expectation of staff to identify and react to spam and phishing.</p>
+<p>So this worked really well, even in this example it was reliably blocking and filtering out spam and phishing emails. I was quite surprised by this, as often these GenAI POCs perform reasonably well, but this one performed extremely well. I would say that if this was implemented in a production way it would add a useful layer of security to any company, taking some of the load off the expectation of staff to identify and react to spam and phishing.</p>
 
 </div>
         
@@ -726,6 +726,11 @@ Finally the F1 Score is a single metric that balances both precision and recall.
 <script type="text/javascript" src="/assets/js/hamburger.js"></script>
 <script type="text/javascript" src="/assets/js/darkModeSwitch.js"></script>
 
+
+  
+  
+    
+  
 
 
 </body>
