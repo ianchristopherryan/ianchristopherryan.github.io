@@ -5,13 +5,17 @@
     <meta content="ie=edge" http-equiv="x-ua-compatible">
     <meta content="width=device-width, initial-scale=1" name="viewport">
 
-    <title>CX - Ian Ryan</title>
+    <title>SQS Queue Drama - Ian Ryan</title>
+
+
+  <meta name="description" content="This blog post discusses an issue relating to an SQS queue growing uncontrolled"/>
 
 
 
 
 
 
+  <meta property="og:image" content="/assets/images/blog/20241223/queueissue.jpg"/>
 
 
 
@@ -31,7 +35,7 @@
     
 
   </head>
-<body class="page page-category has-static-header">
+<body class="page page-post page-post-1 has-static-header">
 
 
 <div class="menu-main-mobile " id="menu-main-mobile">
@@ -181,246 +185,184 @@
 
 <div id="wrapper" class="wrapper">     
   <div class="section">
-  <div class="container">
+  <div class="container post-header">
+
     <div class="row justify-content-center">
-      <div class="col-12">
-        
+      <div class="col-12 col-lg-8">
+          
+            <div class="post-date">23 December 2024</div>
+          
+          
+          <div class="post-categories">
+          
 
 
-
-
-
-
-<div class="title">
-  <div class="row align-items-center">
-    <div class="col-12 col-md-10">
-
-      
-
-      
-        <div class="title-badge">
-          <span>category</span>
-        </div>
-      
-      
-      
-        <div class="title-heading">
-          <h1>CX</h1>
-        </div>
-      
-      
-      
-
-      
-
-    </div>
-
+  
     
 
-  </div>
+
+
+
+<div class="category-link">
+<a href="/category/debugging">
+  Debugging
+</a>
+
 </div>
+  
+    
+
+
+
+
+<div class="category-link">
+<a href="/category/sqs">
+  SQS
+</a>
+
+</div>
+  
+    
+
+
+
+
+<div class="category-link">
+<a href="/category/amazon">
+  Amazon
+</a>
+
+</div>
+  
+
+          
+          </div>
+          <div class="post-title">
+            <h1>SQS Queue Drama</h1>
+          </div>
+          
+            <div class="post-description">
+              <p>This blog post discusses an issue relating to an SQS queue growing uncontrolled</p>
+            </div>
+          
+
+          
+            <div class="post-authors">
+              
+              
+              
+              
+
+
+
+
+<div class="author">
+  
+    <div class="author-image">
+      <img src="/assets/images/team/ianryan.jpeg" alt="Ian Ryan"/>
+    </div>
+  
+
+  
+    <div class="author-content">
+      <div class="author-name">Ian Ryan</div>
+      
+        <div class="author-job">AWS Architect</div>
+      
+    </div>
+  
+</div>
+              
+            </div>
+          
+
       </div>
     </div>
+          
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-8">
+        
+          <div class="post-image">
+            <img src="/assets/images/blog/20241223/queueissue.jpg" alt="SQS Queue Drama" />
+          </div>
+        
+      </div>
+    </div>
+
   </div>
 </div>
 
 <div class="section pt-0">
   <div class="container">
-     
-       
-     
-       
-     
-       
-     
-       
-     
-      
-        <div class="row">
-          <div class="col-12 col-md-8 mb-2">
-            
+    <div class="row justify-content-center">
 
+      <div class="col-12 col-lg-8">
+        <div class="content"><h1 id="sqs-queue-drama">SQS Queue Drama</h1>
 
+<p>So here is an interesting problem that I came across recently with a customers solution. It’s one of those problems that seems so simple when you find out what is happening but can take an annoying amount of time to diagnose when it is happening.</p>
 
+<p>The problems is illustrated by the graph below. Basically you can see that the SQS queue was starting to grow systematically over a period of time until it was eventually fixed. This didn’t make much sense. Let’s have a look at why this was so strange and then the eventual simple solution.</p>
 
+<figure>
+  <!--<a href="" target="">-->
+    <img src="/assets/images/blog/20241223/queue.png" alt="" />
+  <!--</a>-->
+  <figcaption>
+    <h4></h4>
+    <p></p>
+  </figcaption>
+</figure>
 
+<h2 id="why-this-was-weird">Why this was weird?</h2>
 
+<ul>
+  <li>
+    <p>The input into this queue didn’t change, there was no additional load being applied, the load had been consistent for well over a year with no issues.</p>
+  </li>
+  <li>
+    <p>The code around the queue and its consumers had not changed within a year either, it had been performing perfectly well up until this point, there had been no changes to the infrastructure or backend code.</p>
+  </li>
+  <li>
+    <p>The servers were running using spot instances, but again there was no early terminations or other lifecycle management of the spot instances that could have affected this.</p>
+  </li>
+  <li>
+    <p>There were no obvious error messages in the logs for the consumers, they appeared to be processing messages successfully, happily churning through thousands of messages.</p>
+  </li>
+</ul>
 
+<p>But the load wasn’t going down, it was just continuously growing on the queue.</p>
 
+<h2 id="so-what-on-earth-was-happening">So what on earth was happening?</h2>
 
+<p>Well given all of this information we have to start looking at this analytically and ruling out parts of the solution. We can see that it cant be a recent code change, it cant be an increase in load, it cant be the servers being dropped. So what would cause this?</p>
 
+<p>If we pause for a moment and think about how the queue is working we can narrow it down. Messages are being pushed to the queue constantly, and the consumers are constantly pulling data from the queue. This load level hasn’t changed and yet the queue is growing, so the only explanation must be with the consumers, but they seemed to be processing the messages fine, tens of thousands of messages were being processed.</p>
 
+<p>So what could cause a consumer to be successfully processing a message but still leading to the queue size increasing…….</p>
 
+<p>The visibility timeout, thats what.</p>
 
-<div class="card card-post card-list card-has-thumbnail ">
+<p>In our case here the visibility timeout was set to 30 seconds, which seemed like a reasonable amount of time when messages were typically processed within a couple of seconds. However, when just a few messages were more complex and added to the queue, and they started taking longer than 30 seconds to process, the entire thing collapsed.</p>
 
-  
-    <div class="card-thumbnail ">
-      <a href="/blog/2023-08-03-enabling-ai-ability-place-phonecalls/"><img alt="Enabling AI with the Ability to Place Phone Calls: Task Fulfillment Using Generative AI and Amazon Connect" src="/assets/images/gen/blog/booking_bot.png"/></a>
-    </div>
-  
+<h2 id="what-was-happening">What was happening?</h2>
 
-  <div class="card-content">
-    
-    <div class="card-meta">
+<p>Well one of these complex messages was added to the queue, this was then picked up by a consumer who took slightly longer than 30 seconds to process it. There were no errors as the message was eventually successfully processed. However the visibility timeout kicked in as it took longer than 30 seconds and the SQS queue essentially assumed that consumer was dead and so it gave that same complex message to another consumer, which then also took longer than 30 seconds, so SQS then gave it to another consumer… and so on.</p>
 
-      
-        <div class="card-date">03 August 2023</div>
-      
+<p>This meant that with a small flood of complex messages the entire system was taken down and it never recovered. Threads were being locked up by the constant retries of the same messages, and so the amount of actual work the consumers could perform was severely limited.</p>
 
-    </div>  
-    
+<h2 id="what-to-do">What to do?</h2>
 
-    <div class="card-title">
-      <h3>
-        <a href="/blog/2023-08-03-enabling-ai-ability-place-phonecalls/">Enabling AI with the Ability to Place Phone Calls: Task Fulfillment Using Generative AI and Amazon Connect</a>
-      </h3>
-    </div>
+<p>Well firstly set the visibility timeout to something sensible, and by sensible I mean something dramatically higher than what you believe the longest processing time could be. Either this has to be set or else you need to dynamically increase it when your consumer starts to take too long to process the message.</p>
 
-    
+<p>Also you should have a limit in number of retries of messages and a dead letter queue for messages that have been marked as failing on consumers.</p>
 
-    
-      <div class="card-description">
-        <p>Enabling AI to place phone calls, this blog explores task fulfillment using cutting-edge technologies like ChatGPT, Amazon Lex, and Amazon Connect. It outlines the process of creating an intelligent chatbot that can autonomously make calls to real people, reflecting on the historical milestone of Google's Duplex, and delves into the modern advancements that make this innovation both accessible and customizable.</p>
-      </div>
-    
+<p>Doing this should ensure that you donw end up in the strange situation where your queue is growing but there are no errors.</p>
 
-    
-
-    
-
-  </div>
 </div>
-          </div>
-        </div>
-       
-     
-      
-        <div class="row">
-          <div class="col-12 col-md-8 mb-2">
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="card card-post card-list card-has-thumbnail ">
-
-  
-    <div class="card-thumbnail ">
-      <a href="/blog/2023-06-23-amazon-connect-queue-selection-chatgpt/"><img alt="Transforming Contact Center Experiences: A Detailed Overview of Queue Selection using Generative AI" src="/assets/images/gen/blog/AmazonQueues.png"/></a>
-    </div>
-  
-
-  <div class="card-content">
-    
-    <div class="card-meta">
-
-      
-        <div class="card-date">23 June 2023</div>
-      
-
-    </div>  
-    
-
-    <div class="card-title">
-      <h3>
-        <a href="/blog/2023-06-23-amazon-connect-queue-selection-chatgpt/">Transforming Contact Center Experiences: A Detailed Overview of Queue Selection using Generative AI</a>
-      </h3>
-    </div>
-
-    
-
-    
-      <div class="card-description">
-        <p>In this blog post we will be looking at using generative AI to perform queue selection in Amazon Connect</p>
+        
       </div>
-    
 
-    
-
-    
-
-  </div>
-</div>
-          </div>
-        </div>
-       
-     
-       
-     
-       
-     
-       
-     
-      
-        <div class="row">
-          <div class="col-12 col-md-8 mb-2">
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div class="card card-post card-list card-has-thumbnail ">
-
-  
-    <div class="card-thumbnail ">
-      <a href="/blog/2023-04-26-queue-music-selection/"><img alt="Amazon Connect: Customer control of queue music" src="/assets/images/gen/blog/blog-1-thumbnail.webp"/></a>
     </div>
-  
-
-  <div class="card-content">
-    
-    <div class="card-meta">
-
-      
-        <div class="card-date">26 March 2023</div>
-      
-
-    </div>  
-    
-
-    <div class="card-title">
-      <h3>
-        <a href="/blog/2023-04-26-queue-music-selection/">Amazon Connect: Customer control of queue music</a>
-      </h3>
-    </div>
-
-    
-
-    
-      <div class="card-description">
-        <p>In this blog post we are going to show how a queue can be set up to allow the caller to control their queue music, allowing skipping and stopping of the music while they wait.</p>
-      </div>
-    
-
-    
-
-    
-
-  </div>
-</div>
-          </div>
-        </div>
-       
-    
   </div>
 </div>
 
